@@ -1,6 +1,6 @@
 
 #import all of this version information
-__version__ = '0.0.1'
+__version__ = '0.0.3'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -18,7 +18,7 @@ def API():
     global _API
 
     if _API is None:
-       _API = _lnk.apis.springserve_optimization
+       _API = _lnk.springserve
     
     return _API
 
@@ -32,28 +32,31 @@ class _TabComplete(object):
         return []
 
 
+
 class _VDAPIResponse(_TabComplete):
 
-    def __init__(self, service, api_response):
+    def __init__(self, service, api_response_data, path_params, query_params, ok):
         super(_VDAPIResponse, self).__init__()
         self._service = service
-        self._raw_response = api_response
+        self._raw_response = api_response_data
+        self._path_params = path_params
+        self._query_params = query_params or {}
+        self._ok = ok
     
-    def __iter__(self):
-        if isinstance(self.raw, list):
-            for x in self.raw:
-                yield self._service.__RESPONSE_OBJECT__(self._service, x)
-        else:
-            yield self
+    @property
+    def ok(self):
+        return self._ok
 
     @property
     def raw(self):
         return self._raw_response
 
     def __getitem__(self, key):
-
+        
         if isinstance(key, str):
-            return self._raw_response[key]
+            return self.raw[key]
+        elif isinstance(key, int):
+            return self.raw[key]
 
     def __getattr__(self, key):
         """
@@ -66,7 +69,7 @@ class _VDAPIResponse(_TabComplete):
         try:
             return self.__getattribute__(key)
         except AttributeError as e:
-            return self._raw_response[key]
+            return self.raw[key]
     
     def _tab_completions(self):
 
@@ -74,6 +77,19 @@ class _VDAPIResponse(_TabComplete):
             return []
 
         return self.raw.keys()
+
+    
+class _VDAPISingleResponse(_VDAPIResponse):
+
+    def __init__(self, service, api_response_data, path_params, query_params, ok):
+        super(_VDAPISingleResponse, self).__init__(service, api_response_data,
+                                             path_params, query_params, ok)
+
+    def save(self):
+        """
+        Today you can only save on the single response
+        """
+        return self._service.put(self.id, self.raw)
 
     def __setattr__(self, attr, value):
         """
@@ -92,9 +108,76 @@ class _VDAPIResponse(_TabComplete):
         else:
             # TODO - this is the only place where appnexus object fields get changed?
             self._raw_response[attr] = value
+
+
+class _VDAPIMultiResponse(_VDAPIResponse):
+
+    def __init__(self, service, api_response_data, path_params, query_params,
+                 response_object, ok):
+
+        super(_VDAPIMultiResponse, self).__init__(service, api_response_data,
+                                             path_params, query_params, ok)
+        self._object_cache = []
+        self._current_page = 1
+        self._all_pages_gotten = False
+        self.response_object = response_object
+        #build out the initial set of objects
+        self._build_cache(self.raw)
     
-    def save(self):
-        return self._service.put(self.id, self.raw)
+    def _build_cache(self, objects):
+        self._object_cache.extend([self._build_response_object(x) for x in
+                                   objects])
+    
+    def _is_last_page(self, resp):
+        #this means we 
+        return (not resp or not resp.json)
+
+    def _get_next_page(self):
+
+        if self._all_pages_gotten:
+            return 
+
+        params = self._query_params.copy()
+        params['page'] = self._current_page+1
+        resp = self._service.get_raw(self._path_params, **params)
+        
+        # this means we are donesky, we don't know 
+        # how many items there will be, only that we hit the last page
+        if self._is_last_page(resp):
+            self._all_pages_gotten = True
+            return
+
+        self._build_cache(resp.json)
+        self._current_page += 1 
+
+    def _build_response_object(self, data):
+        return self.response_object(self._service, data,
+                                        self._path_params,
+                                        self._query_params, True)
+    def __getitem__(self, key):
+        if not isinstance(key, int):
+            raise Exception("Must be an index ")
+        if key >= len(self._object_cache):
+            if self._all_pages_gotten:
+                raise IndexError("All pages gotten, no such object")
+            self._get_next_page()
+            return self[key]
+        return self._object_cache[key]
+
+    def __iter__(self):
+        """
+        this will automatically take care of pagination for us. 
+        """
+        idx = 0
+        while True:
+            # not sure I love this method, but it's the best 
+            # one I can think of right now
+            try:
+                yield self[idx]
+                idx += 1
+            except IndexError as e:
+                break
+
 
 def _format_url(endpoint, path_param, query_params):
 
@@ -109,11 +192,13 @@ def _format_url(endpoint, path_param, query_params):
         _url += "?{}".format(params)
 
     return _url
+
  
 class _VDAPIService(object):
     
     __API__ = None
-    __RESPONSE_OBJECT__ = _VDAPIResponse
+    __RESPONSE_OBJECT__ = _VDAPISingleResponse
+    __RESPONSES_OBJECT__ = _VDAPIMultiResponse
     
     def __init__(self):
         pass 
@@ -121,23 +206,40 @@ class _VDAPIService(object):
     @property
     def endpoint(self):
         return "/" + self.__API__
-    
    
-    def build_response(self, api_response):
-        return self.__RESPONSE_OBJECT__(self, api_response.json)
+    def build_response(self, api_response, path_params, query_params):
+        is_ok = api_response.ok
 
-    def get(self, path_param=None, query_params=None):
+        resp_json = api_response.json
+        
+        if isinstance(resp_json, list):
+            #wrap it in a multi container
+            return self.__RESPONSES_OBJECT__(self, resp_json, path_params,
+                                        query_params, self.__RESPONSE_OBJECT__,
+                                            is_ok)
+
+        return self.__RESPONSE_OBJECT__(self, resp_json, path_params,
+                                        query_params,is_ok)
+    
+    def get_raw(self, path_param=None, **query_params):
+        return API().get(_format_url(self.endpoint, path_param, query_params))
+
+    def get(self, path_param=None, **query_params):
         global API
         return self.build_response(
-                API().get(_format_url(self.endpoint, path_param, query_params))
+            self.get_raw(path_param, **query_params),
+            path_param, 
+            query_params
         )
     
-    def put(self, path_param, data, query_params=None):
+    def put(self, path_param, data, **query_params):
         global API
         return self.build_response(
                 API().put(_format_url(self.endpoint, path_param, query_params),
                           data = _json.dumps(data)
-                         )
+                         ),
+                path_param, 
+                query_params
         )
  
 
@@ -150,7 +252,7 @@ demand_tags = _DemandTagAPI()
 domain_lists = _DomainListAPI()
 
 
-def raw_get(path_param, query_params=None):
+def raw_get(path_param, **query_params):
     global API
     return API().get(_format_url("", path_param, query_params)).json
 
