@@ -1,6 +1,6 @@
 
 #import all of this version information
-__version__ = '0.0.3'
+__version__ = '0.0.5'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -69,7 +69,10 @@ class _VDAPIResponse(_TabComplete):
         try:
             return self.__getattribute__(key)
         except AttributeError as e:
-            return self.raw[key]
+            #makes unpickling work?
+            if key.startswith("__"):
+                raise e
+            return self._raw_response[key]
     
     def _tab_completions(self):
 
