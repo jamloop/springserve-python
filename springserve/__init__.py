@@ -1,6 +1,6 @@
 
 #import all of this version information
-__version__ = '0.0.5'
+__version__ = '0.0.6'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -239,6 +239,16 @@ class _VDAPIService(object):
         global API
         return self.build_response(
                 API().put(_format_url(self.endpoint, path_param, query_params),
+                          data = _json.dumps(data)
+                         ),
+                path_param, 
+                query_params
+        )
+
+    def new(self, data, path_param = "", **query_params):
+        global API
+        return self.build_response(
+                API().post(_format_url(self.endpoint, path_param, query_params),
                           data = _json.dumps(data)
                          ),
                 path_param, 
