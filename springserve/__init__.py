@@ -1,6 +1,6 @@
 
 #import all of this version information
-__version__ = '0.0.6'
+__version__ = '0.0.7'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -12,13 +12,16 @@ import json as _json
 
 from link import lnk as _lnk
 
+_msg = _lnk.msg
+
 _API = None
 
-def API():
+def API(reauth=False):
     global _API
 
-    if _API is None:
-       _API = _lnk.springserve
+    if _API is None or reauth:
+        _msg.debug("authenticating to springserve")
+        _API = _lnk.springserve
     
     return _API
 
@@ -196,6 +199,8 @@ def _format_url(endpoint, path_param, query_params):
 
     return _url
 
+class VDAuthError(Exception):
+    pass
  
 class _VDAPIService(object):
     
@@ -212,6 +217,9 @@ class _VDAPIService(object):
    
     def build_response(self, api_response, path_params, query_params):
         is_ok = api_response.ok
+        
+        if not is_ok and api_response.status_code == 401:
+            raise VDAuthError("Need to Re-Auth")
 
         resp_json = api_response.json
         
@@ -224,36 +232,61 @@ class _VDAPIService(object):
         return self.__RESPONSE_OBJECT__(self, resp_json, path_params,
                                         query_params,is_ok)
     
-    def get_raw(self, path_param=None, **query_params):
-        return API().get(_format_url(self.endpoint, path_param, query_params))
+    def get_raw(self, path_param=None, reauth=False, **query_params):
+        return API(reauth=reauth).get(_format_url(self.endpoint, path_param, query_params))
 
-    def get(self, path_param=None, **query_params):
+    def get(self, path_param=None, reauth=False, **query_params):
         global API
-        return self.build_response(
-            self.get_raw(path_param, **query_params),
-            path_param, 
-            query_params
-        )
+        try:
+            return self.build_response(
+                self.get_raw(path_param, reauth=reauth, **query_params),
+                path_param, 
+                query_params
+            )
+        except VDAuthError:
+            #we only retry if we are redo'n on an auto reauth 
+            if not reauth:
+                _msg.info("Reauthing and then retry")
+                return self.get(path_param, reauth=True, **query_params) 
+
     
-    def put(self, path_param, data, **query_params):
+    def put(self, path_param, data, reauth=False, **query_params):
         global API
-        return self.build_response(
-                API().put(_format_url(self.endpoint, path_param, query_params),
-                          data = _json.dumps(data)
-                         ),
-                path_param, 
-                query_params
-        )
 
-    def new(self, data, path_param = "", **query_params):
+        try:
+            return self.build_response(
+                    API(reauth=reauth).put(_format_url(self.endpoint, path_param, query_params),
+                              data = _json.dumps(data)
+                             ),
+                    path_param, 
+                    query_params
+            )
+        except VDAuthError:
+            #we only retry if we are redo'n on an auto reauth 
+            if not reauth:
+                _msg.info("Reauthing and then retry")
+                return self.put(path_param, data, reauth=True, **query_params) 
+
+
+
+    def new(self, data, path_param = "", reauth=False, **query_params):
         global API
-        return self.build_response(
-                API().post(_format_url(self.endpoint, path_param, query_params),
-                          data = _json.dumps(data)
-                         ),
-                path_param, 
-                query_params
-        )
+        try:
+            return self.build_response(
+                    API(reauth=reauth).post(_format_url(self.endpoint, path_param, query_params),
+                              data = _json.dumps(data)
+                             ),
+                    path_param, 
+                    query_params
+            )
+        except VDAuthError:
+            #we only retry if we are redo'n on an auto reauth 
+            if not reauth:
+                _msg.info("Reauthing and then retry")
+                return self.new(data, path_param, reauth=True, **query_params) 
+
+
+       
  
 
 from _supply import _SupplyTagAPI
