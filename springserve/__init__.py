@@ -21,7 +21,12 @@ def API(reauth=False):
 
     if _API is None or reauth:
         _msg.debug("authenticating to springserve")
-        _API = _lnk.springserve
+        try:
+            _API = _lnk.springserve
+        except Exception as e:
+            raise Exception("""Error authenticating: check your link.config to
+                            make sure your username, password and url are
+                            correct""" )
     
     return _API
 
@@ -243,11 +248,12 @@ class _VDAPIService(object):
                 path_param, 
                 query_params
             )
-        except VDAuthError:
+        except VDAuthError as e:
             #we only retry if we are redo'n on an auto reauth 
             if not reauth:
                 _msg.info("Reauthing and then retry")
                 return self.get(path_param, reauth=True, **query_params) 
+            raise e
 
     
     def put(self, path_param, data, reauth=False, **query_params):
@@ -261,12 +267,12 @@ class _VDAPIService(object):
                     path_param, 
                     query_params
             )
-        except VDAuthError:
+        except VDAuthError as e:
             #we only retry if we are redo'n on an auto reauth 
             if not reauth:
                 _msg.info("Reauthing and then retry")
                 return self.put(path_param, data, reauth=True, **query_params) 
-
+            raise e
 
 
     def new(self, data, path_param = "", reauth=False, **query_params):
@@ -279,11 +285,13 @@ class _VDAPIService(object):
                     path_param, 
                     query_params
             )
-        except VDAuthError:
+        except VDAuthError as e:
             #we only retry if we are redo'n on an auto reauth 
             if not reauth:
                 _msg.info("Reauthing and then retry")
                 return self.new(data, path_param, reauth=True, **query_params) 
+            #means that we had already tried a reauth and it failed
+            raise e
 
 
        
