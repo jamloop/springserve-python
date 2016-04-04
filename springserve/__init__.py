@@ -1,6 +1,6 @@
 
 #import all of this version information
-__version__ = '0.0.7'
+__version__ = '0.0.8'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -10,9 +10,11 @@ __title__ = 'springserve'
 import sys as _sys
 import json as _json
 
-from link import lnk as _lnk
-
-_msg = _lnk.msg
+try:
+    from link import lnk as _lnk
+    _msg = _lnk.msg
+except: 
+    print "problem loading link, this is ok on the install"
 
 _API = None
 
@@ -275,7 +277,7 @@ class _VDAPIService(object):
             raise e
 
 
-    def new(self, data, path_param = "", reauth=False, **query_params):
+    def post(self, data, path_param = "", reauth=False, **query_params):
         global API
         try:
             return self.build_response(
@@ -293,7 +295,8 @@ class _VDAPIService(object):
             #means that we had already tried a reauth and it failed
             raise e
 
-
+    def new(self, data, path_param = "", reauth=False, **query_params):
+        return self.post(data, path_param, reauth, **query_params)
        
  
 
