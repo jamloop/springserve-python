@@ -18,6 +18,15 @@ class _DomainListResponse(_VDAPIResponse):
 
         """
         return self._service.get("{}/domains".format(self.id))
+    
+    def _to_list(self, input_list):
+        """
+        The api needs a list, and you can't serialize sets, or Series
+        """
+        if isinstance(input_list, list):
+            return input_list
+
+        return [x for x in input_list]
 
     def add_domains(self, domains):
         """
@@ -28,7 +37,7 @@ class _DomainListResponse(_VDAPIResponse):
 
         domains: List of domains you would like to add 
         """
-        payload = {'names':domains}
+        payload = {'names':self._to_list(domains)}
         resp = self._service.post(payload,
                                   path_param='{}/domains/bulk_create'.format(self.id)
                                  )
@@ -43,7 +52,7 @@ class _DomainListResponse(_VDAPIResponse):
 
         domains: List of domains you would like to add 
         """
-        payload = {'names':domains}
+        payload = {'names':self._to_list(domains)}
         resp = self._service.delete(payload,
                                   path_param='{}/domains/bulk_delete'.format(self.id)
                                  )
