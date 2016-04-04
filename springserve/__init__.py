@@ -1,6 +1,6 @@
 
 #import all of this version information
-__version__ = '0.0.8'
+__version__ = '0.0.9'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -29,7 +29,6 @@ def API(reauth=False):
             raise Exception("""Error authenticating: check your link.config to
                             make sure your username, password and url are
                             correct""" )
-    
     return _API
 
 class _TabComplete(object):
@@ -40,7 +39,6 @@ class _TabComplete(object):
     """
     def _tab_completions(self):
         return []
-
 
 
 class _VDAPIResponse(_TabComplete):
@@ -292,6 +290,24 @@ class _VDAPIService(object):
             if not reauth:
                 _msg.info("Reauthing and then retry")
                 return self.new(data, path_param, reauth=True, **query_params) 
+            #means that we had already tried a reauth and it failed
+            raise e
+
+    def delete(self, data, path_param = "", reauth=False, **query_params):
+        global API
+        try:
+            return self.build_response(
+                    API(reauth=reauth).delete(_format_url(self.endpoint, path_param, query_params),
+                              data = _json.dumps(data)
+                             ),
+                    path_param, 
+                    query_params
+            )
+        except VDAuthError as e:
+            #we only retry if we are redo'n on an auto reauth 
+            if not reauth:
+                _msg.info("Reauthing and then retry")
+                return self.delete(data, path_param, reauth=True, **query_params) 
             #means that we had already tried a reauth and it failed
             raise e
 

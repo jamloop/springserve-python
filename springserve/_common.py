@@ -34,6 +34,22 @@ class _DomainListResponse(_VDAPIResponse):
                                  )
         return resp
 
+    def remove_domains(self, domains):
+        """
+        Add a list of domains to this domain list
+
+            d = springserve.domain_list.get(id)
+            d.remove_domains(['blah.com', 'blah2.com'])
+
+        domains: List of domains you would like to add 
+        """
+        payload = {'names':domains}
+        resp = self._service.delete(payload,
+                                  path_param='{}/domains/bulk_delete'.format(self.id)
+                                 )
+        return resp
+
+
 
 class _DomainListAPI(_VDAPIService):
 
