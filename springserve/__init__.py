@@ -1,6 +1,6 @@
 
 #import all of this version information
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -50,7 +50,7 @@ class _VDAPIResponse(_TabComplete):
         self._path_params = path_params
         self._query_params = query_params or {}
         self._ok = ok
-    
+
     @property
     def ok(self):
         return self._ok
@@ -60,7 +60,7 @@ class _VDAPIResponse(_TabComplete):
         return self._raw_response
 
     def __getitem__(self, key):
-        
+
         if isinstance(key, str):
             return self.raw[key]
         elif isinstance(key, int):
@@ -81,7 +81,7 @@ class _VDAPIResponse(_TabComplete):
             if key.startswith("__"):
                 raise e
             return self._raw_response[key]
-    
+
     def _tab_completions(self):
 
         if not self.raw:
@@ -89,12 +89,12 @@ class _VDAPIResponse(_TabComplete):
 
         return self.raw.keys()
 
-    
+
 class _VDAPISingleResponse(_VDAPIResponse):
 
     def __init__(self, service, api_response_data, path_params, query_params, ok):
         super(_VDAPISingleResponse, self).__init__(service, api_response_data,
-                                             path_params, query_params, ok)
+                                                   path_params, query_params, ok)
 
     def save(self):
         """
@@ -127,18 +127,18 @@ class _VDAPIMultiResponse(_VDAPIResponse):
                  response_object, ok):
 
         super(_VDAPIMultiResponse, self).__init__(service, api_response_data,
-                                             path_params, query_params, ok)
+                                                  path_params, query_params, ok)
         self._object_cache = []
         self._current_page = 1
         self._all_pages_gotten = False
         self.response_object = response_object
         #build out the initial set of objects
         self._build_cache(self.raw)
-    
+
     def _build_cache(self, objects):
         self._object_cache.extend([self._build_response_object(x) for x in
                                    objects])
-    
+
     def _is_last_page(self, resp):
         #this means we 
         return (not resp or not resp.json)
@@ -151,7 +151,7 @@ class _VDAPIMultiResponse(_VDAPIResponse):
         params = self._query_params.copy()
         params['page'] = self._current_page+1
         resp = self._service.get_raw(self._path_params, **params)
-        
+
         # this means we are donesky, we don't know 
         # how many items there will be, only that we hit the last page
         if self._is_last_page(resp):
@@ -163,8 +163,8 @@ class _VDAPIMultiResponse(_VDAPIResponse):
 
     def _build_response_object(self, data):
         return self.response_object(self._service, data,
-                                        self._path_params,
-                                        self._query_params, True)
+                                    self._path_params,
+                                    self._query_params, True)
     def __getitem__(self, key):
         if not isinstance(key, int):
             raise Exception("Must be an index ")
@@ -206,37 +206,37 @@ def _format_url(endpoint, path_param, query_params):
 
 class VDAuthError(Exception):
     pass
- 
+
 class _VDAPIService(object):
-    
+
     __API__ = None
     __RESPONSE_OBJECT__ = _VDAPISingleResponse
     __RESPONSES_OBJECT__ = _VDAPIMultiResponse
-    
+
     def __init__(self):
         pass 
 
     @property
     def endpoint(self):
         return "/" + self.__API__
-   
+
     def build_response(self, api_response, path_params, query_params):
         is_ok = api_response.ok
-        
+
         if not is_ok and api_response.status_code == 401:
             raise VDAuthError("Need to Re-Auth")
 
         resp_json = api_response.json
-        
+
         if isinstance(resp_json, list):
             #wrap it in a multi container
             return self.__RESPONSES_OBJECT__(self, resp_json, path_params,
-                                        query_params, self.__RESPONSE_OBJECT__,
-                                            is_ok)
+                                             query_params, self.__RESPONSE_OBJECT__,
+                                             is_ok)
 
         return self.__RESPONSE_OBJECT__(self, resp_json, path_params,
                                         query_params,is_ok)
-    
+
     def get_raw(self, path_param=None, reauth=False, **query_params):
         return API(reauth=reauth).get(_format_url(self.endpoint, path_param, query_params))
 
