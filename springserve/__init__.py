@@ -1,6 +1,6 @@
 
 #import all of this version information
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -319,10 +319,12 @@ class _VDAPIService(object):
 from _supply import _SupplyTagAPI
 from _demand import _DemandTagAPI
 from _common import _DomainListAPI
+from _reporting import _ReportingAPI
 
 supply_tags = _SupplyTagAPI()
 demand_tags = _DemandTagAPI()
 domain_lists = _DomainListAPI()
+reports = _ReportingAPI()
 
 
 def raw_get(path_param, **query_params):
