@@ -316,15 +316,18 @@ class _VDAPIService(object):
        
  
 
-from _supply import _SupplyTagAPI
-from _demand import _DemandTagAPI
+from _supply import _SupplyTagAPI, _SupplyPartnerAPI
+from _demand import _DemandTagAPI, _DemandPartnerAPI
 from _common import _DomainListAPI
 from _reporting import _ReportingAPI
 
-supply_tags = _SupplyTagAPI()
 demand_tags = _DemandTagAPI()
+demand_partners = _DemandPartnerAPI()
 domain_lists = _DomainListAPI()
+
 reports = _ReportingAPI()
+supply_tags = _SupplyTagAPI()
+supply_partners = _SupplyPartnerAPI()
 
 
 def raw_get(path_param, **query_params):

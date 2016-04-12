@@ -22,8 +22,10 @@ class TestServices(TestCase):
     
     def test_services_exist(self):
         assert hasattr(mock_spring, 'supply_tags')
+        assert hasattr(mock_spring, 'supply_partners')
         assert hasattr(mock_spring, 'domain_lists')
         assert hasattr(mock_spring, 'demand_tags')
+        assert hasattr(mock_spring, 'demand_partners')
 
     def assert_response_type(self, resp):
         """
