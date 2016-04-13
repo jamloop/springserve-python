@@ -1,6 +1,6 @@
 
 #import all of this version information
-__version__ = '0.1.3'
+__version__ = '0.1.4'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -320,15 +320,20 @@ from _supply import _SupplyTagAPI, _SupplyPartnerAPI
 from _demand import _DemandTagAPI, _DemandPartnerAPI
 from _common import _DomainListAPI
 from _reporting import _ReportingAPI
+from _account import _AccountAPI, _UserAPI
+
+accounts = _AccountAPI()
 
 demand_tags = _DemandTagAPI()
 demand_partners = _DemandPartnerAPI()
 domain_lists = _DomainListAPI()
 
 reports = _ReportingAPI()
+
 supply_tags = _SupplyTagAPI()
 supply_partners = _SupplyPartnerAPI()
 
+users = _UserAPI()
 
 def raw_get(path_param, **query_params):
     global API
