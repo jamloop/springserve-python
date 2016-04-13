@@ -100,7 +100,7 @@ class _VDAPISingleResponse(_VDAPIResponse):
         """
         Today you can only save on the single response
         """
-        return self._service.put(self.id, self.raw)
+        return self._service.put(self.id, self.raw, account_id = self.account_id)
 
     def __setattr__(self, attr, value):
         """
@@ -190,19 +190,27 @@ class _VDAPIMultiResponse(_VDAPIResponse):
                 break
 
 
-def _format_url(endpoint, path_param, query_params):
+def _format_url(endpoint, path_param):
 
     _url = endpoint
 
     if path_param:
         _url += "/{}".format(path_param)
 
-    if query_params and isinstance(query_params, dict):
-        params = "&".join(["{}={}".format(key, value) for key,value in
-                           query_params.iteritems()])
-        _url += "?{}".format(params)
-
     return _url
+
+def _format_params(params):
+    
+    _params = {}
+
+    for key, value in params.iteritems():
+        if isinstance(value, list):
+            #make sure any list has the [] on it 
+            key = "{}[]".format(key.lstrip("[]"))
+        _params[key] = value
+
+    return _params
+
 
 class VDAuthError(Exception):
     pass
@@ -236,9 +244,11 @@ class _VDAPIService(object):
 
         return self.__RESPONSE_OBJECT__(self, resp_json, path_params,
                                         query_params,is_ok)
-
+    
     def get_raw(self, path_param=None, reauth=False, **query_params):
-        return API(reauth=reauth).get(_format_url(self.endpoint, path_param, query_params))
+        params = _format_params(query_params)
+        return API(reauth=reauth).get(_format_url(self.endpoint, path_param),
+                                      params = params)
 
     def get(self, path_param=None, reauth=False, **query_params):
         global API
@@ -260,9 +270,12 @@ class _VDAPIService(object):
         global API
 
         try:
+            params = _format_params(query_params)
             return self.build_response(
-                    API(reauth=reauth).put(_format_url(self.endpoint, path_param, query_params),
-                              data = _json.dumps(data)
+                    API(reauth=reauth).put(
+                                          _format_url(self.endpoint, path_param), 
+                                           params = params,
+                                          data = _json.dumps(data)
                              ),
                     path_param, 
                     query_params
@@ -278,9 +291,12 @@ class _VDAPIService(object):
     def post(self, data, path_param = "", reauth=False, **query_params):
         global API
         try:
+            params = _format_params(query_params)
             return self.build_response(
-                    API(reauth=reauth).post(_format_url(self.endpoint, path_param, query_params),
-                              data = _json.dumps(data)
+                    API(reauth=reauth).post(
+                                        _format_url(self.endpoint, path_param),
+                                        params=params,
+                                        data = _json.dumps(data)
                              ),
                     path_param, 
                     query_params
@@ -296,9 +312,11 @@ class _VDAPIService(object):
     def delete(self, data, path_param = "", reauth=False, **query_params):
         global API
         try:
+            params = _format_params(query_params)
             return self.build_response(
-                    API(reauth=reauth).delete(_format_url(self.endpoint, path_param, query_params),
-                              data = _json.dumps(data)
+                    API(reauth=reauth).delete(_format_url(self.endpoint, path_param),
+                                              params = params,
+                                              data = _json.dumps(data)
                              ),
                     path_param, 
                     query_params
@@ -337,7 +355,8 @@ users = _UserAPI()
 
 def raw_get(path_param, **query_params):
     global API
-    return API().get(_format_url("", path_param, query_params)).json
+    params = _format_params(query_params)
+    return API().get(_format_url("", path_param), params = params).json
 
 
 def _install_ipython_completers():  # pragma: no cover
