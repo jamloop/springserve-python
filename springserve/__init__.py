@@ -1,6 +1,6 @@
 
 #import all of this version information
-__version__ = '0.1.4'
+__version__ = '0.1.5'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -19,6 +19,10 @@ except:
 _API = None
 
 def API(reauth=False):
+    """
+    Get the raw API object.  This is rarely used directly by a client of this
+    library, but it used as an internal function
+    """
     global _API
 
     if _API is None or reauth:
@@ -53,10 +57,21 @@ class _VDAPIResponse(_TabComplete):
 
     @property
     def ok(self):
+        """
+        Tells you if the api response was "ok" 
+        
+        meaning that it responded with a 200.  If there was an error, this will
+        return false
+
+        """
         return self._ok
 
     @property
     def raw(self):
+        """
+        Gives you the raw json response from the api.  Usually you do not need
+        to call this
+        """
         return self._raw_response
 
     def __getitem__(self, key):
@@ -72,7 +87,6 @@ class _VDAPIResponse(_TabComplete):
         object that has all of the fields that the api returns.  I seperate all
         of the returned data in self._data
         """
-
         # if it's not there then try to get it as an attribute
         try:
             return self.__getattribute__(key)
@@ -98,7 +112,16 @@ class _VDAPISingleResponse(_VDAPIResponse):
 
     def save(self):
         """
-        Today you can only save on the single response
+        Save this object back to the api after making changes.  As an example::
+
+            tag = springserve.supply_tags.get(1)
+            tag.name = "This is my new name"
+            # this will print if the save went through correctly
+            print tag.save().ok
+
+        Returns:
+
+            An API response object 
         """
         return self._service.put(self.id, self.raw, account_id = self.account_id)
 
@@ -189,6 +212,9 @@ class _VDAPIMultiResponse(_VDAPIResponse):
             except IndexError as e:
                 break
 
+    def __len__(self):
+        return len([x for x in self])
+
 
 def _format_url(endpoint, path_param):
 
@@ -226,6 +252,15 @@ class _VDAPIService(object):
 
     @property
     def endpoint(self):
+        """
+        The api endpoint that is used for this service.  For example:: 
+            
+            In [1]: import springserve
+
+            In [2]: springserve.supply_tags.endpoint
+            Out[2]: '/supply_tags'
+
+        """
         return "/" + self.__API__
 
     def build_response(self, api_response, path_params, query_params):
@@ -246,11 +281,38 @@ class _VDAPIService(object):
                                         query_params,is_ok)
     
     def get_raw(self, path_param=None, reauth=False, **query_params):
+        """
+        Get the raw http response for this object.  This is rarely used by a
+        client unless they want to inspect the raw http fields
+        """
         params = _format_params(query_params)
         return API(reauth=reauth).get(_format_url(self.endpoint, path_param),
                                       params = params)
 
     def get(self, path_param=None, reauth=False, **query_params):
+        """
+        Make a get request to this api service.  Allows you to pass in arbitrary
+        query paramaters. 
+        
+        Examples::
+
+            # get all supply_tags
+            tags = springserve.supply_tags.get()
+
+            for tag in tags:
+                print tag.id, tag.name
+
+            # get one supply tag
+            tag = springserve.supply_tag.get(1)
+            print tag.id, tag.name
+
+            # get by many ids
+            tags = springserve.supply_tags.get(ids=[1,2,3])
+
+            # get users that are account_contacts (ie, using query string # params)
+            users = springserve.users.get(account_contact=True)
+
+        """
         global API
         try:
             return self.build_response(
@@ -309,14 +371,16 @@ class _VDAPIService(object):
             #means that we had already tried a reauth and it failed
             raise e
 
-    def delete(self, data, path_param = "", reauth=False, **query_params):
+    def delete(self, path_param = "", reauth=False, **query_params):
+        """
+        Delete an object.  
+        """
         global API
         try:
             params = _format_params(query_params)
             return self.build_response(
                     API(reauth=reauth).delete(_format_url(self.endpoint, path_param),
-                                              params = params,
-                                              data = _json.dumps(data)
+                                              params = params
                              ),
                     path_param, 
                     query_params
@@ -325,11 +389,18 @@ class _VDAPIService(object):
             #we only retry if we are redo'n on an auto reauth 
             if not reauth:
                 _msg.info("Reauthing and then retry")
-                return self.delete(data, path_param, reauth=True, **query_params) 
+                return self.delete(path_param, reauth=True, **query_params) 
             #means that we had already tried a reauth and it failed
             raise e
 
     def new(self, data, path_param = "", reauth=False, **query_params):
+        """
+        Create a new object.  You need to pass in the required fields as a
+        dictionary.  For instance::
+
+            resp = springserve.domain_lists.new({'name':'My Domain List'})
+            print resp.ok
+        """
         return self.post(data, path_param, reauth, **query_params)
        
  
