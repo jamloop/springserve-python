@@ -1,6 +1,6 @@
 
 #import all of this version information
-__version__ = '0.1.6'
+__version__ = '0.1.7'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -124,6 +124,12 @@ class _VDAPISingleResponse(_VDAPIResponse):
             An API response object 
         """
         return self._service.put(self.id, self.raw, account_id = self.account_id)
+    
+    def duplicate(self, **kwargs):
+
+        payload = self.raw.copy()
+        payload.update(kwargs)
+        return self._service.new(payload, account_id = self.account_id)
 
     def __setattr__(self, attr, value):
         """
