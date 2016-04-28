@@ -17,23 +17,38 @@ except:
     print "problem loading link, this is ok on the install"
 
 _API = None
+_ACCOUNT = None
 
 def API(reauth=False):
     """
     Get the raw API object.  This is rarely used directly by a client of this
     library, but it used as an internal function
     """
-    global _API
+    global _API, _ACCOUNT
 
     if _API is None or reauth:
         _msg.debug("authenticating to springserve")
         try:
-            _API = _lnk.springserve
+            if _ACCOUNT:
+                _API = _lnk("springserve.{}".format(_ACCOUNT))
+            else:
+                try:
+                    _API = _lnk("springserve.{}".format("__default__")) 
+                except:
+                    #this is to keep backwards compatiblity
+                    _API = _lnk.springserve
+                   
+
         except Exception as e:
             raise Exception("""Error authenticating: check your link.config to
                             make sure your username, password and url are
                             correct""" )
     return _API
+
+def switch_account(account_name="__default__"):
+    global _ACCOUNT
+    _ACCOUNT = account_name
+    API(True) 
 
 class _TabComplete(object):
     """
