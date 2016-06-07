@@ -188,7 +188,8 @@ class _VDAPIMultiResponse(_VDAPIResponse):
         return (not resp or not resp.json)
 
     def _get_next_page(self):
-
+        
+        msg.info('getting the next page')
         if self._all_pages_gotten:
             return 
 
@@ -392,7 +393,7 @@ class _VDAPIService(object):
             #means that we had already tried a reauth and it failed
             raise e
 
-    def delete(self, path_param = "", reauth=False, **query_params):
+    def delete(self, data, path_param = "", reauth=False, **query_params):
         """
         Delete an object.  
         """
@@ -401,7 +402,8 @@ class _VDAPIService(object):
             params = _format_params(query_params)
             return self.build_response(
                     API(reauth=reauth).delete(_format_url(self.endpoint, path_param),
-                                              params = params
+                                              params = params,
+                                              data = _json.dumps(data)
                              ),
                     path_param, 
                     query_params
@@ -410,7 +412,7 @@ class _VDAPIService(object):
             #we only retry if we are redo'n on an auto reauth 
             if not reauth:
                 _msg.info("Reauthing and then retry")
-                return self.delete(path_param, reauth=True, **query_params) 
+                return self.delete(data, path_param, reauth=True, **query_params) 
             #means that we had already tried a reauth and it failed
             raise e
 
