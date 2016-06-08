@@ -10,6 +10,8 @@ __title__ = 'springserve'
 import sys as _sys
 import json as _json
 
+_msg = None
+
 try:
     from link import lnk as _lnk
     _msg = _lnk.msg
@@ -189,7 +191,6 @@ class _VDAPIMultiResponse(_VDAPIResponse):
 
     def _get_next_page(self):
         
-        msg.info('getting the next page')
         if self._all_pages_gotten:
             return 
 
@@ -428,20 +429,22 @@ class _VDAPIService(object):
        
  
 
-from _supply import _SupplyTagAPI, _SupplyPartnerAPI
-from _demand import _DemandTagAPI, _DemandPartnerAPI
+from _supply import _SupplyTagAPI, _SupplyPartnerAPI, _SupplyGroupAPI
+from _demand import _DemandTagAPI, _DemandPartnerAPI, _DemandGroupAPI
 from _common import _DomainListAPI
 from _reporting import _ReportingAPI
 from _account import _AccountAPI, _UserAPI
 
 accounts = _AccountAPI()
 
+demand_groups = _DemandGroupAPI()
 demand_tags = _DemandTagAPI()
 demand_partners = _DemandPartnerAPI()
 domain_lists = _DomainListAPI()
 
 reports = _ReportingAPI()
 
+supply_groups = _SupplyGroupAPI()
 supply_tags = _SupplyTagAPI()
 supply_partners = _SupplyPartnerAPI()
 
@@ -474,6 +477,6 @@ if "IPython" in _sys.modules:  # pragma: no cover
     try:
         _install_ipython_completers()
     except Exception:
-        msg.debug("Error loading tab completers")
+        _msg.debug("Error loading tab completers")
         pass 
 
