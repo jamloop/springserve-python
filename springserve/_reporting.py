@@ -69,4 +69,10 @@ class _ReportingAPI(_VDAPIService):
         return self.post(data=payload)
 
 
- 
+class _TrafficQualityReport(_ReportingAPI):
+
+    __API__ = "traffic_quality_reports"
+    __RESPONSES_OBJECT__ = _ReportingResponse
+    
+
+

@@ -1,6 +1,6 @@
 
 #import all of this version information
-__version__ = '0.1.8'
+__version__ = '0.1.9'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -432,7 +432,7 @@ class _VDAPIService(object):
 from _supply import _SupplyTagAPI, _SupplyPartnerAPI, _SupplyGroupAPI
 from _demand import _DemandTagAPI, _DemandPartnerAPI, _DemandGroupAPI
 from _common import _DomainListAPI
-from _reporting import _ReportingAPI
+from _reporting import _ReportingAPI, _TrafficQualityReport
 from _account import _AccountAPI, _UserAPI
 
 accounts = _AccountAPI()
@@ -443,6 +443,7 @@ demand_partners = _DemandPartnerAPI()
 domain_lists = _DomainListAPI()
 
 reports = _ReportingAPI()
+quality_reports = _TrafficQualityReport()
 
 supply_groups = _SupplyGroupAPI()
 supply_tags = _SupplyTagAPI()
