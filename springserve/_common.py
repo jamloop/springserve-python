@@ -6,7 +6,7 @@ class _DomainListResponse(_VDAPIResponse):
     Override to give you access to the actual domains
     """
 
-    def get_domains(self):
+    def get_domains(self, **kwargs):
         """
         Get the list of domains that are in this domain list
 
@@ -17,7 +17,7 @@ class _DomainListResponse(_VDAPIResponse):
                 print domain.name
 
         """
-        return self._service.get("{}/domains".format(self.id))
+        return self._service.get("{}/domains".format(self.id), **kwargs)
     
     def _to_list(self, input_list):
         """
