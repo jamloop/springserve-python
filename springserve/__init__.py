@@ -1,6 +1,6 @@
 
 #import all of this version information
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
