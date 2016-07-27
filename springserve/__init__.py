@@ -291,8 +291,11 @@ class _VDAPIService(object):
 
         if not is_ok and api_response.status_code == 401:
             raise VDAuthError("Need to Re-Auth")
-
-        resp_json = api_response.json
+        
+        if api_response.status_code == 204:  # this means empty
+            resp_json = {}
+        else:
+            resp_json = api_response.json
 
         if isinstance(resp_json, list):
             #wrap it in a multi container
@@ -394,7 +397,26 @@ class _VDAPIService(object):
             #means that we had already tried a reauth and it failed
             raise e
 
-    def delete(self, data, path_param = "", reauth=False, **query_params):
+    def delete(self, path_param = "", reauth=False, **query_params):
+        global API
+        try:
+            params = _format_params(query_params)
+            return self.build_response(
+                    API(reauth=reauth).delete(_format_url(self.endpoint, path_param),
+                                              params = params,
+                             ),
+                    path_param, 
+                    query_params
+            )
+        except VDAuthError as e:
+            #we only retry if we are redo'n on an auto reauth 
+            if not reauth:
+                _msg.info("Reauthing and then retry")
+                return self.delete(path_param, reauth=True, **query_params) 
+            #means that we had already tried a reauth and it failed
+            raise e
+
+    def bulk_delete(self, data, path_param = "", reauth=False, **query_params):
         """
         Delete an object.  
         """

@@ -53,7 +53,7 @@ class _DomainListResponse(_VDAPIResponse):
         domains: List of domains you would like to add 
         """
         payload = {'names':self._to_list(domains)}
-        resp = self._service.delete(payload,
+        resp = self._service.bulk_delete(payload,
                                   path_param='{}/domains/bulk_delete'.format(self.id)
                                  )
         return resp
