@@ -1,6 +1,6 @@
 
 #import all of this version information
-__version__ = '0.2.1'
+__version__ = '0.2.2'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -127,7 +127,7 @@ class _VDAPISingleResponse(_VDAPIResponse):
         super(_VDAPISingleResponse, self).__init__(service, api_response_data,
                                                    path_params, query_params, ok)
 
-    def save(self):
+    def save(self, **kwargs):
         """
         Save this object back to the api after making changes.  As an example::
 
@@ -140,7 +140,8 @@ class _VDAPISingleResponse(_VDAPIResponse):
 
             An API response object 
         """
-        return self._service.put(self.id, self.raw, account_id = self.account_id)
+        return self._service.put(self.id, self.raw, account_id =
+                                 self.account_id, **kwargs)
     
     def duplicate(self, **kwargs):
 
