@@ -43,14 +43,15 @@ class TestServices(TestCase):
         api = mock_spring.API()
 
         resp = mock_spring.mock_service.get(self.param)        
-        api.get.assert_called_with(format_url(self.end_point, self.param))
+        api.get.assert_called_with(format_url(self.end_point, self.param),
+                                   params={})
         self.assert_response_type(resp)
 
     def test_get_query(self):
         api = mock_spring.API()
         resp = mock_spring.mock_service.get(self.param, that="this")        
-        api.get.assert_called_with(format_url(self.end_point, self.param,
-                                              {'that': 'this'}))
+        api.get.assert_called_with(format_url(self.end_point, self.param),
+                                              params = {'that': 'this'})
         self.assert_response_type(resp)
 
     def test_post_no_query(self):
@@ -59,6 +60,7 @@ class TestServices(TestCase):
 
         api = mock_spring.API()
         api.post.assert_called_with(format_url(self.end_point),
+                                    params={},
                                    data = json.dumps(payload))
         self.assert_response_type(resp)
 
@@ -67,8 +69,8 @@ class TestServices(TestCase):
         resp = mock_spring.mock_service.post(payload, self.param, this="that")        
 
         api = mock_spring.API()
-        api.post.assert_called_with(format_url(self.end_point, self.param, {"this":
-                                                                       "that"}),
+        api.post.assert_called_with(format_url(self.end_point, self.param),
+                                    params = {"this": "that"},
                                    data = json.dumps(payload))
         self.assert_response_type(resp)
 
@@ -78,6 +80,7 @@ class TestServices(TestCase):
 
         api = mock_spring.API()
         api.put.assert_called_with(format_url(self.end_point, self.param),
+                                    params={},
                                    data = json.dumps(payload))
         self.assert_response_type(resp)
 
@@ -86,8 +89,8 @@ class TestServices(TestCase):
         resp =  mock_spring.mock_service.put(self.param, payload, this="that")        
 
         api = mock_spring.API()
-        api.put.assert_called_with(format_url(self.end_point, self.param, {"this":
-                                                                       "that"}),
+        api.put.assert_called_with(format_url(self.end_point, self.param),
+                                   params = {"this": "that"},
                                    data = json.dumps(payload))
     
         self.assert_response_type(resp)
@@ -98,6 +101,7 @@ class TestServices(TestCase):
 
         api = mock_spring.API()
         api.post.assert_called_with(format_url(self.end_point, None, {}),
+                                    params={},
                                    data = json.dumps(payload))
 
         self.assert_response_type(resp)

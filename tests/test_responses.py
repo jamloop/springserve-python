@@ -18,7 +18,8 @@ class TestSingleResponse(TestCase):
         reset_mock()
         self.path_params = "path"
         self.query_params = {"query":"something"}
-        self.response_data = {"this": "that", "foo": "bar", "id": 1}
+        self.response_data = {"this": "that", "foo": "bar", "id": 1,
+                              "account_id": 1}
         self.response = mock_spring._VDAPISingleResponse(
                                     mock_spring.mock_service, 
                                     self.response_data, 
@@ -45,7 +46,10 @@ class TestSingleResponse(TestCase):
         self.response.save()
 
         api = mock_spring.API()
-        api.put.assert_called_with(format_url("/" + mock_spring.mock_service.__API__ ,self.response_data['id']),
+        api.put.assert_called_with(format_url("/" +
+                                              mock_spring.mock_service.__API__
+                                              ,self.response_data['id']),
+                                   params={"account_id": 1},
                                    data = json.dumps(self.response.raw))
     
     def test_get_attribute(self):
