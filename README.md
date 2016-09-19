@@ -1,7 +1,10 @@
 # springserve-python
 Python Library for accessing the Springserve API
 
-Installation
+For more information on using the API, please refer to our Wiki:
+
+https://springserve.atlassian.net/wiki/display/SSD/SpringServe+API Installation
+
 -------------
 
 To install from source:
@@ -28,7 +31,7 @@ To configure link for springserve:
 Open ipython and run the following. This will edit your link.config.  By default this will be ~/.link/link.config.  
 You can change this directory location by setting the environment variable  LNK_DIR
 
-Here is an example config:
+Run the following to set up your config:
 		
 		In [1]: import springserve
 
@@ -46,24 +49,24 @@ is an interactive shell that is well suited for adhoc data analysis as well as
 general python debugging. One of it's best features is tab completion and
 documentation
 	
-		In [1]: import springserve as sprg
+		In [1]: import springserve
 
-		In [2]: sprg.<tab>
+		In [2]: springserve.<tab>
 
-			sprg.API    sprg.demand_tags   sprg.domain_lists  sprg.raw_get sprg.supply_tags
+			springserve.API    springserve.demand_tags   springserve.domain_lists  springserve.raw_get springserve.supply_tags
 		
 		# see documentation on the get function of supply_tags
-		In [3]: sprg.supply_tags.get?
+		In [3]: springserve.supply_tags.get?
 
 		Type:        instancemethod
 		String form: <bound method _SupplyTagAPI.get of
 		<springserve._supply._SupplyTagAPI object at 0x103439ad0>>
 		File:        /Users/dave/src/springserve-python/springserve/__init__.py
-		Definition:  sprg.supply_tags.get(self, path_param=None, query_params=None)
+		Definition:  springserve.supply_tags.get(self, path_param=None, query_params=None)
 		Docstring:   used to call the /supply_tags end point...more docs to come
 
 		# get a supply_tag by it's id
-		In [4]: tag = sprg.supply_tags.get(1234)		
+		In [4]: tag = springserve.supply_tags.get(1234)		
 		
 		# see what fields exist on the supply_tag
 		In [5]: tag.<tab>
@@ -88,7 +91,7 @@ In addition to working with single responses.  This simple interface makes it
 easy to make calls that will return more than one result.
 		
 
-		In [8]: tags = sprg.demand_tags.get()
+		In [8]: tags = springserve.demand_tags.get()
 
 		In [9]: for tag in tags:
 		...:     print tag.name
@@ -101,8 +104,8 @@ easy to make calls that will return more than one result.
 
 Below is the documentation for and an example of using SpringServe reporting
 
-        In [10]: sprg.reports.run?
-        Signature: ss.reports.run(start_date=None, end_date=None, interval=None,
+        In [10]: springserve.reports.run?
+        Signature: springserve.reports.run(start_date=None, end_date=None, interval=None,
         dimensions=None, account_id=None, **kwargs)
         Docstring:
         parameter     options (if applicable)  notes
@@ -130,13 +133,9 @@ Below is the documentation for and an example of using SpringServe reporting
         demand_partner_ids:  [3,10,81]
         demand_types:    ["Vast Only","FLASH"]
 
-        In[11]: report = sprg.reports.run(state_date="2016-09-19", end_date="2016-09-19",
+        In[11]: report = springserve.reports.run(state_date="2016-09-19", end_date="2016-09-19",
         dimensions=["supply_tag_id"], declared_domains=["nytimes.com", "weather.com"])
 
         In[12]: report.ok
         Out[12]: True
-
-For more information on using the API, please refer to our Wiki:
-
-https://springserve.atlassian.net/wiki/display/SSD/SpringServe+API
 
