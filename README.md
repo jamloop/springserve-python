@@ -33,7 +33,7 @@ Here is an example config:
 		In [1]: import springserve
 
 		In [2]: springserve.setup_config()
-		Enter a user name: optimization@springserve.com
+		Enter a user name: {enter email here}
 		Enter password:
 		Would you like write[Y/n] y
 		writing config to: /Users/{username}/.link/link.config
