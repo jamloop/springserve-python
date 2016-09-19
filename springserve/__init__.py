@@ -1,6 +1,6 @@
 
 #import all of this version information
-__version__ = '0.2.2'
+__version__ = '0.2.3'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -9,6 +9,7 @@ __title__ = 'springserve'
 
 import sys as _sys
 import json as _json
+import getpass
 
 _msg = None
 
@@ -20,6 +21,47 @@ except:
 
 _API = None
 _ACCOUNT = None
+_DEFAULT_BASE_URL = "https://admin-video.springserve.com/api/v0"
+
+def setup_config():
+    """
+    This is used the first time you run it to set up your configuration if 
+    you want to do that over the command prompt
+    """
+    current_file = _lnk.config_file()
+    current_config = _lnk.config() or {}
+
+    if current_config.get('springserve'):
+        print("already configured, remove or edit springserve section from {}".format(current_file))
+
+        confirm = raw_input('Would you like overwrite[Y/n] ')
+        if not confirm or confirm.upper() != 'Y':
+            print("thanks")
+            return
+
+    user = raw_input('Enter a user name: ')
+    password = getpass.getpass('Enter password: ')
+
+    current_config['springserve'] = {
+        '__default__': {
+            'base_url': _DEFAULT_BASE_URL,
+            'user': user,
+            'password': password,
+            'wrapper': "SpringServeAPI"
+        }
+    }
+
+    confirm = raw_input('Would you like write[Y/n] ')
+    if not confirm or confirm.upper() != 'Y':
+        print("thanks")
+        return
+   
+    print("writing config to: {}".format(current_file))
+    with open(current_file, 'w') as f:
+        f.write(_json.dumps(current_config, indent=4))
+
+    print("done: refreshing config") 
+    _lnk.fresh()
 
 def API(reauth=False):
     """

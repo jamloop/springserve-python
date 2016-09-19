@@ -33,14 +33,15 @@ class _ReportingAPI(_VDAPIService):
         interval:    "hour", "day", "cumulative"  
         timezone:    "UTC", "America/New_York"   defaults to America/New_York
         date_range:  Today, Yesterday, Last 7 Days   date_range takes precedence over start_date/end_date
-        dimensions:  supply_tag_id, demand_tag_id, domain, demand_type, supply_type, supply_partner_id, demand_partner_id, supply_group  domain is only available when using date_range of Today, Yesterday, or Last 7 Days
+        dimensions:  supply_tag_id, demand_tag_id, detected_domain, declared_domain, demand_type, supply_type, supply_partner_id, demand_partner_id, supply_group  domain is only available when using date_range of Today, Yesterday, or Last 7 Days
 
         the following parameters act as filters; pass an array of values (usually IDs)
         =================================================================================
 
         supply_tag_ids:  [22423,22375, 25463]
         demand_tag_ids:  [22423,22375, 25463]     
-        domains:         ["nytimes.com", "weather.com"]   
+        detected_domain:         ["nytimes.com", "weather.com"]   
+        declared_domain:         ["nytimes.com", "weather.com"]   
         supply_types     ["Syndicated","Third-Party"]     
         supply_partner_ids:  [30,42,41]   
         supply_group_ids:    [13,15,81]   
