@@ -97,3 +97,46 @@ easy to make calls that will return more than one result.
 		My Tag 1	
 		My Tag 2
 		
+### SpringServe Reporting ###
+
+Below is the documentation for and an example of using SpringServe reporting
+
+        In [10]: sprg.reports.run?
+        Signature: ss.reports.run(start_date=None, end_date=None, interval=None,
+        dimensions=None, account_id=None, **kwargs)
+        Docstring:
+        parameter     options (if applicable)  notes
+        ===================================================
+        start_date:  "2015-12-01 00:00:00" or "2015-12-01"
+        end_date:    "2015-12-02 00:00:00" or "2015-12-01"
+        interval:    "hour", "day", "cumulative"
+        timezone:    "UTC", "America/New_York"   defaults to America/New_York
+        date_range:  Today, Yesterday, Last 7 Days   date_range takes precedence over
+        start_date/end_date
+        dimensions:  supply_tag_id, demand_tag_id, detected_domain, declared_domain,
+        demand_type, supply_type, supply_partner_id, demand_partner_id, supply_group
+        domain is only available when using date_range of Today, Yesterday, or Last 7 Days
+
+        the following parameters act as filters; pass an array of values (usually IDs)
+        =================================================================================
+
+        supply_tag_ids:  [22423,22375, 25463]
+        demand_tag_ids:  [22423,22375, 25463]
+        detected_domain:         ["nytimes.com", "weather.com"]
+        declared_domain:         ["nytimes.com", "weather.com"]
+        supply_types     ["Syndicated","Third-Party"]
+        supply_partner_ids:  [30,42,41]
+        supply_group_ids:    [13,15,81]
+        demand_partner_ids:  [3,10,81]
+        demand_types:    ["Vast Only","FLASH"]
+
+        In[11]: report = sprg.reports.run(state_date="2016-09-19", end_date="2016-09-19",
+        dimensions=["supply_tag_id"], declared_domains=["nytimes.com", "weather.com"])
+
+        In[12]: report.ok
+        Out[12]: True
+
+For more information on using the API, please refer to our Wiki:
+
+https://springserve.atlassian.net/wiki/display/SSD/SpringServe+API
+
