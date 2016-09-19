@@ -25,20 +25,20 @@ Link will be installed when you install springserve
 
 To configure link for springserve:
 
-edit you link.config.  By default this will be ~/.link/link.config.  You can
-change this directory location by setting the environment variable  LNK_DIR
+Open ipython and run the following. This will edit your link.config.  By default this will be ~/.link/link.config.  
+You can change this directory location by setting the environment variable  LNK_DIR
 
 Here is an example config:
 		
-		{
-		  "springserve": { 
-			"base_url": "https://video.springserve.com/api/v0",
-			"user": "<user>",
-			"password": "<password>",
-			"wrapper": "SpringServeAPI"
-		  }
-		}
-	
+		In [1]: import springserve
+
+		In [2]: springserve.setup_config()
+		Enter a user name: optimization@springserve.com
+		Enter password:
+		Would you like write[Y/n] y
+		writing config to: /Users/{username}/.link/link.config
+		done: refreshing config
+
 ### Tab Completion and IPython ###
 
 The python library was built to work seamlessly with tools like IPython. IPython
