@@ -9,7 +9,7 @@ dir = os.path.split(os.path.abspath(__file__))[0]
 DESCRIPTION = "API Library for video.springserve.com"
 LONG_DESCRIPTION = """Springserve is a video adserver, and this library allows you
 to interface with its api to do read/write and reporting requests """
-URL = 'www.springserve.com'
+URL = 'http://www.springserve.com'
 DOWNLOAD_URL = ''
 CLASSIFIERS = ['Development Status :: 4 - Beta',     
                'Programming Language :: Python',
