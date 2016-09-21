@@ -40,8 +40,8 @@ class _ReportingAPI(_VDAPIService):
 
         supply_tag_ids:  [22423,22375, 25463]
         demand_tag_ids:  [22423,22375, 25463]     
-        detected_domain:         ["nytimes.com", "weather.com"]   
-        declared_domain:         ["nytimes.com", "weather.com"]   
+        detected_domains:         ["nytimes.com", "weather.com"]   
+        declared_domains:         ["nytimes.com", "weather.com"]   
         supply_types     ["Syndicated","Third-Party"]     
         supply_partner_ids:  [30,42,41]   
         supply_group_ids:    [13,15,81]   
