@@ -1,6 +1,6 @@
 
 #import all of this version information
-__version__ = '0.2.3'
+__version__ = '0.2.4'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -21,7 +21,7 @@ except:
 
 _API = None
 _ACCOUNT = None
-_DEFAULT_BASE_URL = "https://admin-video.springserve.com/api/v0"
+_DEFAULT_BASE_URL = "https://video.springserve.com/api/v0"
 
 def setup_config():
     """
