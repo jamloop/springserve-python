@@ -1,5 +1,5 @@
 
-from . import _VDAPIService, _VDAPIResponse
+from . import _VDAPIService, _VDAPIResponse, _VDAPISingleResponse
 
 class _DomainListResponse(_VDAPIResponse):
     """
@@ -65,4 +65,39 @@ class _DomainListAPI(_VDAPIService):
     __API__ = "domain_lists"
     __RESPONSE_OBJECT__ = _DomainListResponse
 
+
+class _BillItemAPI(_VDAPIService):
+
+    __API__ = "bill_items"
+
+    def __init__(self, bill_id):
+        self.bill_id = bill_id
+
+    @property
+    def endpoint(self):
+        """
+        The api endpoint that is used for this service.  For example:: 
+            
+            In [1]: import springserve
+
+            In [2]: springserve.supply_tags.endpoint
+            Out[2]: '/supply_tags'
+
+        """
+        return "/bills/{}/bill_items".format(self.bill_id)
+
+
+class _BillResponse(_VDAPISingleResponse):
     
+    def get_bill_items(self):
+        # Need to make a new one per bill
+        return _BillItemAPI(self.id).get()
+
+    def _add_bill_item(self, data, **kwargs):
+        return _BillItemAPI(self.id).post(data, **kwargs)
+
+
+class _BillAPI(_VDAPIService):
+
+    __API__ = "bills"
+    __RESPONSE_OBJECT__ = _BillResponse
