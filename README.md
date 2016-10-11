@@ -58,12 +58,29 @@ documentation
 		# see documentation on the get function of supply_tags
 		In [3]: springserve.supply_tags.get?
 
-		Type:        instancemethod
-		String form: <bound method _SupplyTagAPI.get of
-		<springserve._supply._SupplyTagAPI object at 0x103439ad0>>
-		File:        /Users/dave/src/springserve-python/springserve/__init__.py
-		Definition:  springserve.supply_tags.get(self, path_param=None, query_params=None)
-		Docstring:   used to call the /supply_tags end point...more docs to come
+        Signature: springserve.supply_tags.get(path_param=None, reauth=False, **query_params)
+        Docstring:
+        Make a get request to this api service.  Allows you to pass in arbitrary query paramaters.
+
+        Examples::
+
+            # get all supply_tags
+            tags = springserve.supply_tags.get()
+
+            for tag in tags:
+                print tag.id, tag.name
+
+            # get one supply tag
+            tag = springserve.supply_tag.get(1)
+            print tag.id, tag.name
+
+            # get by many ids
+            tags = springserve.supply_tags.get(ids=[1,2,3])
+
+            # get users that are account_contacts (ie, using query string # params)
+            users = springserve.users.get(account_contact=True)
+        File:      /usr/local/lib/python2.7/site-packages/springserve/__init__.py
+        Type:      instancemethod
 
 		# get a supply_tag by it's id
 		In [4]: tag = springserve.supply_tags.get(1234)		
