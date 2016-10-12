@@ -3,7 +3,9 @@ Python Library for accessing the Springserve API
 
 For more information on using the API, please refer to our Wiki:
 
-https://springserve.atlassian.net/wiki/display/SSD/SpringServe+API Installation
+https://springserve.atlassian.net/wiki/pages/viewpage.action?pageId=12517384
+
+Installation
 
 -------------
 
