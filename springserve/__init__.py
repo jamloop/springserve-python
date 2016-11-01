@@ -1,6 +1,6 @@
 
 #import all of this version information
-__version__ = '0.2.5'
+__version__ = '0.2.6'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -166,10 +166,18 @@ class _VDAPIResponse(_TabComplete):
 class _VDAPISingleResponse(_VDAPIResponse):
 
     def __init__(self, service, api_response_data, path_params, query_params, ok):
+        self._dirty = {}
         super(_VDAPISingleResponse, self).__init__(service, api_response_data,
                                                    path_params, query_params, ok)
+    
+    def set_dirty(self, field):
+        """
+        you need this for nested fields that you have changed 
+        but didn't actually set
+        """
+        self._dirty[field] = self._raw_response[field]
 
-    def save(self, **kwargs):
+    def save(self, dirty_only=False, **kwargs):
         """
         Save this object back to the api after making changes.  As an example::
 
@@ -182,7 +190,14 @@ class _VDAPISingleResponse(_VDAPIResponse):
 
             An API response object 
         """
-        return self._service.put(self.id, self.raw, account_id =
+        #if they have dirty fields only send those
+
+        payload = self.raw
+
+        if dirty_only:
+            payload = self._dirty
+
+        return self._service.put(self.id, payload, account_id =
                                  self.account_id, **kwargs)
     
     def duplicate(self, **kwargs):
@@ -208,6 +223,7 @@ class _VDAPISingleResponse(_VDAPIResponse):
         else:
             # TODO - this is the only place where appnexus object fields get changed?
             self._raw_response[attr] = value
+            self._dirty[attr] = value
 
 
 class _VDAPIMultiResponse(_VDAPIResponse):
