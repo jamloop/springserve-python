@@ -39,7 +39,7 @@ class TestSingleResponse(TestCase):
         
         self.assertTrue(isinstance(self.response, mock_spring._TabComplete))
         self.assertEquals(self.response._tab_completions(),
-                          self.response_data.keys())
+                          list(self.response_data.keys()))
 
     def test_save(self):
         self.response.this = "not_that"

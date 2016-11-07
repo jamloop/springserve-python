@@ -1,11 +1,14 @@
 
+from __future__ import absolute_import
+from builtins import input
+from builtins import object
+
 #import all of this version information
-__version__ = '0.2.6'
+__version__ = '0.2.7'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
 __title__ = 'springserve'
-
 
 import sys as _sys
 import json as _json
@@ -17,7 +20,7 @@ try:
     from link import lnk as _lnk
     _msg = _lnk.msg
 except: 
-    print "problem loading link, this is ok on the install"
+    print("problem loading link, this is ok on the install")
 
 _API = None
 _ACCOUNT = None
@@ -34,12 +37,12 @@ def setup_config():
     if current_config.get('springserve'):
         print("already configured, remove or edit springserve section from {}".format(current_file))
 
-        confirm = raw_input('Would you like overwrite[Y/n] ')
+        confirm = input('Would you like overwrite[Y/n] ')
         if not confirm or confirm.upper() != 'Y':
             print("thanks")
             return
 
-    user = raw_input('Enter a user name: ')
+    user = input('Enter a user name: ')
     password = getpass.getpass('Enter password: ')
 
     current_config['springserve'] = {
@@ -51,7 +54,7 @@ def setup_config():
         }
     }
 
-    confirm = raw_input('Would you like write[Y/n] ')
+    confirm = input('Would you like write[Y/n] ')
     if not confirm or confirm.upper() != 'Y':
         print("thanks")
         return
@@ -160,7 +163,7 @@ class _VDAPIResponse(_TabComplete):
         if not self.raw:
             return []
 
-        return self.raw.keys()
+        return list(self.raw.keys())
 
 
 class _VDAPISingleResponse(_VDAPIResponse):
@@ -311,7 +314,7 @@ def _format_params(params):
     
     _params = {}
 
-    for key, value in params.iteritems():
+    for key, value in params.items():
         if isinstance(value, list):
             #make sure any list has the [] on it 
             key = "{}[]".format(key.lstrip("[]"))
@@ -510,11 +513,11 @@ class _VDAPIService(object):
        
  
 
-from _supply import _SupplyTagAPI, _SupplyPartnerAPI, _SupplyGroupAPI
-from _demand import _DemandTagAPI, _DemandPartnerAPI, _DemandGroupAPI
-from _common import _DomainListAPI, _BillAPI
-from _reporting import _ReportingAPI, _TrafficQualityReport
-from _account import _AccountAPI, _UserAPI
+from ._supply import _SupplyTagAPI, _SupplyPartnerAPI, _SupplyGroupAPI
+from ._demand import _DemandTagAPI, _DemandPartnerAPI, _DemandGroupAPI
+from ._common import _DomainListAPI, _BillAPI
+from ._reporting import _ReportingAPI, _TrafficQualityReport
+from ._account import _AccountAPI, _UserAPI
 
 accounts = _AccountAPI()
 

@@ -14,20 +14,13 @@ DOWNLOAD_URL = ''
 CLASSIFIERS = ['Development Status :: 4 - Beta',     
                'Programming Language :: Python',
                'Programming Language :: Python :: 2'
+               'Programming Language :: Python :: 3'
               ]
 EMAIL = ''
 SETUP_ARGS = {}
 REQUIRES = ['requests>=2.0.0', 'requests_oauthlib>=0.4.0',
-            'link>=0.3.1','xmltodict' ]
+            'link>=0.3.1','xmltodict', 'pandas' ]
 
-try:
-    import numpy
-    import pandas
-except:
-    print "We highly suggest you install numpy and Pandas for some functionality" 
-    print "pip install numpy"
-    print "pip install pandas"
-  
 # write out the version file so we can keep track on what version the built
 # package is
 
