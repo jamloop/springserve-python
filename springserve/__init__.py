@@ -1,10 +1,14 @@
 
 from __future__ import absolute_import
-from builtins import input
-from builtins import object
+
+import six
+
+if six.PY3:
+    from builtins import input
+    from builtins import object
 
 #import all of this version information
-__version__ = '0.2.7'
+__version__ = '0.2.8'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
