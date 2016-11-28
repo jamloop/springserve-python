@@ -8,7 +8,7 @@ if six.PY3:
     from builtins import object
 
 #import all of this version information
-__version__ = '0.2.8'
+__version__ = '0.2.9'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -23,7 +23,7 @@ _msg = None
 try:
     from link import lnk as _lnk
     _msg = _lnk.msg
-except: 
+except:
     print("problem loading link, this is ok on the install")
 
 _API = None
@@ -32,7 +32,7 @@ _DEFAULT_BASE_URL = "https://video.springserve.com/api/v0"
 
 def setup_config():
     """
-    This is used the first time you run it to set up your configuration if 
+    This is used the first time you run it to set up your configuration if
     you want to do that over the command prompt
     """
     current_file = _lnk.config_file()
@@ -62,12 +62,12 @@ def setup_config():
     if not confirm or confirm.upper() != 'Y':
         print("thanks")
         return
-   
+
     print("writing config to: {}".format(current_file))
     with open(current_file, 'w') as f:
         f.write(_json.dumps(current_config, indent=4))
 
-    print("done: refreshing config") 
+    print("done: refreshing config")
     _lnk.fresh()
 
 def API(reauth=False):
@@ -84,11 +84,11 @@ def API(reauth=False):
                 _API = _lnk("springserve.{}".format(_ACCOUNT))
             else:
                 try:
-                    _API = _lnk("springserve.{}".format("__default__")) 
+                    _API = _lnk("springserve.{}".format("__default__"))
                 except:
                     #this is to keep backwards compatiblity
                     _API = _lnk.springserve
-                   
+
 
         except Exception as e:
             raise Exception("""Error authenticating: check your link.config to
@@ -99,13 +99,13 @@ def API(reauth=False):
 def switch_account(account_name="__default__"):
     global _ACCOUNT
     _ACCOUNT = account_name
-    API(True) 
+    API(True)
 
 class _TabComplete(object):
     """
-    this class exists to make any other class 
-    have a tab completion function that is already 
-    hooked into ipython 
+    this class exists to make any other class
+    have a tab completion function that is already
+    hooked into ipython
     """
     def _tab_completions(self):
         return []
@@ -124,8 +124,8 @@ class _VDAPIResponse(_TabComplete):
     @property
     def ok(self):
         """
-        Tells you if the api response was "ok" 
-        
+        Tells you if the api response was "ok"
+
         meaning that it responded with a 200.  If there was an error, this will
         return false
 
@@ -176,10 +176,10 @@ class _VDAPISingleResponse(_VDAPIResponse):
         self._dirty = {}
         super(_VDAPISingleResponse, self).__init__(service, api_response_data,
                                                    path_params, query_params, ok)
-    
+
     def set_dirty(self, field):
         """
-        you need this for nested fields that you have changed 
+        you need this for nested fields that you have changed
         but didn't actually set
         """
         self._dirty[field] = self._raw_response[field]
@@ -195,7 +195,7 @@ class _VDAPISingleResponse(_VDAPIResponse):
 
         Returns:
 
-            An API response object 
+            An API response object
         """
         #if they have dirty fields only send those
 
@@ -206,7 +206,7 @@ class _VDAPISingleResponse(_VDAPIResponse):
 
         return self._service.put(self.id, payload, account_id =
                                  self.account_id, **kwargs)
-    
+
     def duplicate(self, **kwargs):
 
         payload = self.raw.copy()
@@ -252,26 +252,26 @@ class _VDAPIMultiResponse(_VDAPIResponse):
                                    objects])
 
     def _is_last_page(self, resp):
-        #this means we 
+        #this means we
         return (not resp or not resp.json)
 
     def _get_next_page(self):
-        
+
         if self._all_pages_gotten:
-            return 
+            return
 
         params = self._query_params.copy()
         params['page'] = self._current_page+1
         resp = self._service.get_raw(self._path_params, **params)
 
-        # this means we are donesky, we don't know 
+        # this means we are donesky, we don't know
         # how many items there will be, only that we hit the last page
         if self._is_last_page(resp):
             self._all_pages_gotten = True
             return
 
         self._build_cache(resp.json)
-        self._current_page += 1 
+        self._current_page += 1
 
     def _build_response_object(self, data):
         return self.response_object(self._service, data,
@@ -289,11 +289,11 @@ class _VDAPIMultiResponse(_VDAPIResponse):
 
     def __iter__(self):
         """
-        this will automatically take care of pagination for us. 
+        this will automatically take care of pagination for us.
         """
         idx = 0
         while True:
-            # not sure I love this method, but it's the best 
+            # not sure I love this method, but it's the best
             # one I can think of right now
             try:
                 yield self[idx]
@@ -315,12 +315,12 @@ def _format_url(endpoint, path_param):
     return _url
 
 def _format_params(params):
-    
+
     _params = {}
 
     for key, value in params.items():
         if isinstance(value, list):
-            #make sure any list has the [] on it 
+            #make sure any list has the [] on it
             key = "{}[]".format(key.lstrip("[]"))
         _params[key] = value
 
@@ -337,13 +337,13 @@ class _VDAPIService(object):
     __RESPONSES_OBJECT__ = _VDAPIMultiResponse
 
     def __init__(self):
-        pass 
+        pass
 
     @property
     def endpoint(self):
         """
-        The api endpoint that is used for this service.  For example:: 
-            
+        The api endpoint that is used for this service.  For example::
+
             In [1]: import springserve
 
             In [2]: springserve.supply_tags.endpoint
@@ -357,7 +357,7 @@ class _VDAPIService(object):
 
         if not is_ok and api_response.status_code == 401:
             raise VDAuthError("Need to Re-Auth")
-        
+
         if api_response.status_code == 204:  # this means empty
             resp_json = {}
         else:
@@ -371,7 +371,7 @@ class _VDAPIService(object):
 
         return self.__RESPONSE_OBJECT__(self, resp_json, path_params,
                                         query_params,is_ok)
-    
+
     def get_raw(self, path_param=None, reauth=False, **query_params):
         """
         Get the raw http response for this object.  This is rarely used by a
@@ -384,8 +384,8 @@ class _VDAPIService(object):
     def get(self, path_param=None, reauth=False, **query_params):
         """
         Make a get request to this api service.  Allows you to pass in arbitrary
-        query paramaters. 
-        
+        query paramaters.
+
         Examples::
 
             # get all supply_tags
@@ -409,17 +409,17 @@ class _VDAPIService(object):
         try:
             return self.build_response(
                 self.get_raw(path_param, reauth=reauth, **query_params),
-                path_param, 
+                path_param,
                 query_params
             )
         except VDAuthError as e:
-            #we only retry if we are redo'n on an auto reauth 
+            #we only retry if we are redo'n on an auto reauth
             if not reauth:
                 _msg.info("Reauthing and then retry")
-                return self.get(path_param, reauth=True, **query_params) 
+                return self.get(path_param, reauth=True, **query_params)
             raise e
 
-    
+
     def put(self, path_param, data, reauth=False, **query_params):
         global API
 
@@ -427,18 +427,18 @@ class _VDAPIService(object):
             params = _format_params(query_params)
             return self.build_response(
                     API(reauth=reauth).put(
-                                          _format_url(self.endpoint, path_param), 
+                                          _format_url(self.endpoint, path_param),
                                            params = params,
                                           data = _json.dumps(data)
                              ),
-                    path_param, 
+                    path_param,
                     query_params
             )
         except VDAuthError as e:
-            #we only retry if we are redo'n on an auto reauth 
+            #we only retry if we are redo'n on an auto reauth
             if not reauth:
                 _msg.info("Reauthing and then retry")
-                return self.put(path_param, data, reauth=True, **query_params) 
+                return self.put(path_param, data, reauth=True, **query_params)
             raise e
 
 
@@ -452,14 +452,14 @@ class _VDAPIService(object):
                                         params=params,
                                         data = _json.dumps(data)
                              ),
-                    path_param, 
+                    path_param,
                     query_params
             )
         except VDAuthError as e:
-            #we only retry if we are redo'n on an auto reauth 
+            #we only retry if we are redo'n on an auto reauth
             if not reauth:
                 _msg.info("Reauthing and then retry")
-                return self.new(data, path_param, reauth=True, **query_params) 
+                return self.new(data, path_param, reauth=True, **query_params)
             #means that we had already tried a reauth and it failed
             raise e
 
@@ -471,20 +471,20 @@ class _VDAPIService(object):
                     API(reauth=reauth).delete(_format_url(self.endpoint, path_param),
                                               params = params,
                              ),
-                    path_param, 
+                    path_param,
                     query_params
             )
         except VDAuthError as e:
-            #we only retry if we are redo'n on an auto reauth 
+            #we only retry if we are redo'n on an auto reauth
             if not reauth:
                 _msg.info("Reauthing and then retry")
-                return self.delete(path_param, reauth=True, **query_params) 
+                return self.delete(path_param, reauth=True, **query_params)
             #means that we had already tried a reauth and it failed
             raise e
 
     def bulk_delete(self, data, path_param = "", reauth=False, **query_params):
         """
-        Delete an object.  
+        Delete an object.
         """
         global API
         try:
@@ -494,14 +494,14 @@ class _VDAPIService(object):
                                               params = params,
                                               data = _json.dumps(data)
                              ),
-                    path_param, 
+                    path_param,
                     query_params
             )
         except VDAuthError as e:
-            #we only retry if we are redo'n on an auto reauth 
+            #we only retry if we are redo'n on an auto reauth
             if not reauth:
                 _msg.info("Reauthing and then retry")
-                return self.delete(data, path_param, reauth=True, **query_params) 
+                return self.delete(data, path_param, reauth=True, **query_params)
             #means that we had already tried a reauth and it failed
             raise e
 
@@ -514,14 +514,15 @@ class _VDAPIService(object):
             print resp.ok
         """
         return self.post(data, path_param, reauth, **query_params)
-       
- 
+
+
 
 from ._supply import _SupplyTagAPI, _SupplyPartnerAPI, _SupplyGroupAPI
 from ._demand import _DemandTagAPI, _DemandPartnerAPI, _DemandGroupAPI
 from ._common import _DomainListAPI, _BillAPI
 from ._reporting import _ReportingAPI, _TrafficQualityReport
 from ._account import _AccountAPI, _UserAPI
+from ._object_change_messages import _ObjectChangeMessagesAPI
 
 accounts = _AccountAPI()
 
@@ -531,6 +532,8 @@ demand_groups = _DemandGroupAPI()
 demand_tags = _DemandTagAPI()
 demand_partners = _DemandPartnerAPI()
 domain_lists = _DomainListAPI()
+
+_object_change_messages = _ObjectChangeMessagesAPI()
 
 reports = _ReportingAPI()
 quality_reports = _TrafficQualityReport()
@@ -563,11 +566,11 @@ def _install_ipython_completers():  # pragma: no cover
 
 # Importing IPython brings in about 200 modules, so we want to avoid it unless
 # we're in IPython (when those modules are loaded anyway).
-# Code attributed to Pandas, Thanks Wes 
+# Code attributed to Pandas, Thanks Wes
 if "IPython" in _sys.modules:  # pragma: no cover
     try:
         _install_ipython_completers()
     except Exception:
         _msg.debug("Error loading tab completers")
-        pass 
+        pass
 
