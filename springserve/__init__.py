@@ -8,7 +8,7 @@ if six.PY3:
     from builtins import object
 
 #import all of this version information
-__version__ = '0.2.9'
+__version__ = '0.3.0'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -522,6 +522,7 @@ from ._demand import _DemandTagAPI, _DemandPartnerAPI, _DemandGroupAPI
 from ._common import _DomainListAPI, _BillAPI
 from ._reporting import _ReportingAPI, _TrafficQualityReport
 from ._account import _AccountAPI, _UserAPI
+from ._direct_connect import _DirectConnectionAPI
 from ._object_change_messages import _ObjectChangeMessagesAPI
 
 accounts = _AccountAPI()
@@ -531,6 +532,8 @@ bills = _BillAPI()
 demand_groups = _DemandGroupAPI()
 demand_tags = _DemandTagAPI()
 demand_partners = _DemandPartnerAPI()
+direct_connections = _DirectConnectionAPI()
+
 domain_lists = _DomainListAPI()
 
 _object_change_messages = _ObjectChangeMessagesAPI()
