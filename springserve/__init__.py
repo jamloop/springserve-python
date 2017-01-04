@@ -8,7 +8,7 @@ if six.PY3:
     from builtins import object
 
 #import all of this version information
-__version__ = '0.3.0'
+__version__ = '0.3.1'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
