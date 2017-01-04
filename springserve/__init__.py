@@ -3,8 +3,6 @@ from __future__ import absolute_import
 
 import six
 
-import pandas
-
 if six.PY3:
     from builtins import input
     from builtins import object
