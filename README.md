@@ -11,12 +11,12 @@ Installation
 
 To install from source:
 
-    python setup.py install 
+    python setup.py install
 
 To install from pip:
 
-    pip install springserve 
-  
+    pip install springserve
+
 Usage
 -----------
 
@@ -30,11 +30,11 @@ Link will be installed when you install springserve
 
 To configure link for springserve:
 
-Open ipython and run the following. This will edit your link.config.  By default this will be ~/.link/link.config.  
+Open ipython and run the following. This will edit your link.config.  By default this will be ~/.link/link.config.
 You can change this directory location by setting the environment variable  LNK_DIR
 
 Run the following to set up your config:
-		
+
 		In [1]: import springserve
 
 		In [2]: springserve.setup_config()
@@ -50,13 +50,13 @@ The python library was built to work seamlessly with tools like IPython. IPython
 is an interactive shell that is well suited for adhoc data analysis as well as
 general python debugging. One of it's best features is tab completion and
 documentation
-	
+
 		In [1]: import springserve
 
 		In [2]: springserve.<tab>
 
 			springserve.API    springserve.demand_tags   springserve.domain_lists  springserve.raw_get springserve.supply_tags
-		
+
 		# see documentation on the get function of supply_tags
 		In [3]: springserve.supply_tags.get?
 
@@ -85,8 +85,8 @@ documentation
         Type:      instancemethod
 
 		# get a supply_tag by it's id
-		In [4]: tag = springserve.supply_tags.get(1234)		
-		
+		In [4]: tag = springserve.supply_tags.get(1234)
+
 		# see what fields exist on the supply_tag
 		In [5]: tag.<tab>
 
@@ -101,14 +101,14 @@ documentation
 		# see the contents of a field
 		In [5]: tag.name
 		Out[7]: "My Test Tag"
-		
+
 		# change the contents and save it
 		In [6]: tag.name = "My New Test Tag"
 		In [7]: resp = tag.save()
 
 In addition to working with single responses.  This simple interface makes it
 easy to make calls that will return more than one result.
-		
+
 
 		In [8]: tags = springserve.demand_tags.get()
 
@@ -116,9 +116,9 @@ easy to make calls that will return more than one result.
 		...:     print tag.name
 		...:
 
-		My Tag 1	
+		My Tag 1
 		My Tag 2
-		
+
 ### SpringServe Reporting ###
 
 Below is the documentation for and an example of using SpringServe reporting
@@ -157,4 +157,28 @@ Below is the documentation for and an example of using SpringServe reporting
 
         In[12]: report.ok
         Out[12]: True
+
+        Getting next pages of your report
+        =================================================================================
+
+        In[11]: report = springserve.reports.run(state_date="2016-09-19", end_date="2016-09-19",
+        dimensions=["supply_tag_id"], declared_domains=["nytimes.com", "weather.com"])
+
+        In[11]: report_df = report.to_dataframe()
+
+        In[12]: report.get_next_page()
+        Out[12]: True
+
+        This method returns True if it got the next page and False if not, indicating that you
+        are already at the last page.
+        Note that if you call get_next_page this overwrite the current data and when you call
+        to_dataframe the results will only contain the data from the last page you got.
+
+        In[12]: report.get_all_pages()
+        Out[12]:
+
+        This method gets all the remaining pages of the report (so if you're currently at page 2 it
+        will get page 2 onwards, if you're at page 1 it will get everything) then if you call to_dataframe
+        on the report you will get all the data. Note that if this is a very large report it's best
+        to get one page at a time so you don't run out of memory.
 
