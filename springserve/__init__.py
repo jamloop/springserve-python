@@ -88,8 +88,7 @@ def API(reauth=False):
                 except:
                     #this is to keep backwards compatiblity
                     _API = _lnk.springserve
-
-
+            _API.headers.update({'springserve-sdk': __version__})
         except Exception as e:
             raise Exception("""Error authenticating: check your link.config to
                             make sure your username, password and url are
