@@ -19,22 +19,22 @@ class _ReportingResponse(_VDAPIMultiResponse):
         return self.dataframe
 
     def _is_last_page(self, resp):
-        self.all_pages_gotten = not resp.data
-        return self.all_pages_gotten
+        self._all_pages_gotten = not resp.data
+        return self._all_pages_gotten
 
     def get_next_page(self, clear_previous=True):
 
-        if self.all_pages_gotten:
+        if self._all_pages_gotten:
             return False
 
-        self._payload['page'] = self.current_page+1
+        self._payload['page'] = self._current_page+1
         if self._payload:
             resp = self._service.post(data=self._payload)
         else:
             raise('Original report paramaters are missing')
 
         if self._is_last_page(resp):
-            self.all_pages_gotten = True
+            self._all_pages_gotten = True
             return False
 
         new_data = pandas.DataFrame(resp.raw['data'])
@@ -42,12 +42,13 @@ class _ReportingResponse(_VDAPIMultiResponse):
         if clear_previous:
             self.dataframe = new_data
         else:
+            self.to_dataframe()
             self.dataframe = self.dataframe.append(new_data)
-        self.current_page += 1
+        self._current_page += 1
         return True
 
     def get_all_pages(self):
-        while not self.all_pages_gotten:
+        while not self._all_pages_gotten:
             self.get_next_page(clear_previous=False)
         return None
 
@@ -77,7 +78,19 @@ class _ReportingAPI(_VDAPIService):
             response = self.post(data=payload)
         return response
 
+    def build_response(self, api_response, path_params='', query_params='', payload=''):
+        is_ok = api_response.ok
 
+        if not is_ok and api_response.status_code == 401:
+            raise VDAuthError("Need to Re-Auth")
+        if api_response.status_code == 204:  # this means empty
+            resp_json = {}
+        else:
+            resp_json = api_response.json
+
+        return self.__RESPONSES_OBJECT__(self, resp_json, path_params,
+                                             query_params, self.__RESPONSE_OBJECT__,
+                                             is_ok, payload)
 
 
     def run(self, start_date=None, end_date=None, interval=None, dimensions=None,

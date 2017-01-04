@@ -82,13 +82,11 @@ class TestMultiResponse(TestCase):
         self.query_params = {"query":"something"}
         self.response_data = [{"this1": "that1", "foo": "bar"},
                               {"this1": "that1", "foo": "bar"}]
-        self.payload = {"page":5}
         self.response = mock_spring._VDAPIMultiResponse(
                                     mock_spring.mock_service,
                                     self.response_data,
                                     self.path_params,
                                     self.query_params,
-                                    self.payload,
                                     _MockResponse,
                                     True)
         self.bad_response = mock_spring._VDAPIMultiResponse(
@@ -96,7 +94,6 @@ class TestMultiResponse(TestCase):
                                     self.response_data,
                                     self.path_params,
                                     self.query_params,
-                                    self.payload,
                                     _MockResponse,
                                     False)
 

@@ -115,13 +115,14 @@ class _TabComplete(object):
 
 class _VDAPIResponse(_TabComplete):
 
-    def __init__(self, service, api_response_data, path_params, query_params, ok):
+    def __init__(self, service, api_response_data, path_params, query_params, ok, payload=''):
         super(_VDAPIResponse, self).__init__()
         self._service = service
         self._raw_response = api_response_data
         self._path_params = path_params
         self._query_params = query_params or {}
         self._ok = ok
+        self._payload = payload
 
     @property
     def ok(self):
@@ -174,10 +175,10 @@ class _VDAPIResponse(_TabComplete):
 
 class _VDAPISingleResponse(_VDAPIResponse):
 
-    def __init__(self, service, api_response_data, path_params, query_params, ok):
+    def __init__(self, service, api_response_data, path_params, query_params, ok, payload=''):
         self._dirty = {}
         super(_VDAPISingleResponse, self).__init__(service, api_response_data,
-                                                   path_params, query_params, ok)
+                                                   path_params, query_params, ok, payload)
 
     def set_dirty(self, field):
         """
@@ -237,21 +238,19 @@ class _VDAPISingleResponse(_VDAPIResponse):
 
 class _VDAPIMultiResponse(_VDAPIResponse):
 
-    def __init__(self, service, api_response_data, path_params, query_params, payload,
-                 response_object, ok):
+    def __init__(self, service, api_response_data, path_params, query_params,
+                 response_object, ok, payload=''):
 
         super(_VDAPIMultiResponse, self).__init__(service, api_response_data,
-                                                  path_params, query_params, ok)
+                                                  path_params, query_params, ok, payload)
         self._payload = payload
-        self.current_page = 1
-        self.all_pages_gotten = False
-        self.dataframe = None
         self._object_cache = []
         self._current_page = 1
         self._all_pages_gotten = False
         self.response_object = response_object
         #build out the initial set of objects
         self._build_cache(self.raw)
+        self.dataframe = None
 
     def _build_cache(self, objects):
         self._object_cache.extend([self._build_response_object(x) for x in
@@ -361,7 +360,6 @@ class _VDAPIService(object):
 
     def build_response(self, api_response, path_params, query_params, payload=''):
         is_ok = api_response.ok
-        is_report = False
 
         if not is_ok and api_response.status_code == 401:
             raise VDAuthError("Need to Re-Auth")
@@ -371,18 +369,14 @@ class _VDAPIService(object):
         else:
             resp_json = api_response.json
 
-        if 'data' in resp_json:
-            if isinstance(resp_json['data'], list):
-                is_report = True
-
-        if isinstance(resp_json, list) or is_report:
+        if isinstance(resp_json, list):
             #wrap it in a multi container
             return self.__RESPONSES_OBJECT__(self, resp_json, path_params,
-                                             query_params, payload, self.__RESPONSE_OBJECT__,
-                                             is_ok)
+                                             query_params, self.__RESPONSE_OBJECT__,
+                                             is_ok, payload)
 
         return self.__RESPONSE_OBJECT__(self, resp_json, path_params,
-                                        query_params,is_ok)
+                                        query_params,is_ok, payload)
 
     def get_raw(self, path_param=None, reauth=False, **query_params):
         """
@@ -444,7 +438,8 @@ class _VDAPIService(object):
                                           data = _json.dumps(data)
                              ),
                     path_param,
-                    query_params
+                    query_params,
+                    payload=data
             )
         except VDAuthError as e:
             #we only retry if we are redo'n on an auto reauth
@@ -466,7 +461,7 @@ class _VDAPIService(object):
                              ),
                     path_param,
                     query_params,
-                    data
+                    payload=data
             )
         except VDAuthError as e:
             #we only retry if we are redo'n on an auto reauth
