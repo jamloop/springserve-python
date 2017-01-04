@@ -13,6 +13,17 @@ msg = lnk.msg
 
 class _ReportingResponse(_VDAPIMultiResponse):
 
+    def __init__(self, service, api_response_data, path_params, query_params,
+                ok, payload):
+
+        super(_ReportingResponse, self).__init__(service, api_response_data,
+                                                path_params, query_params, _ReportingResponse,
+                                                ok, payload)
+        self.dataframe = None
+
+    def _build_cache(self, objects):
+        pass
+
     def to_dataframe(self):
         if self.dataframe is None:
             self.dataframe = pandas.DataFrame(self.raw['data'])
@@ -42,7 +53,7 @@ class _ReportingResponse(_VDAPIMultiResponse):
         if clear_previous:
             self.dataframe = new_data
         else:
-            self.to_dataframe()
+            self.to_self.dataframe()
             self.dataframe = self.dataframe.append(new_data)
         self._current_page += 1
         return True
@@ -78,7 +89,7 @@ class _ReportingAPI(_VDAPIService):
             response = self.post(data=payload)
         return response
 
-    def build_response(self, api_response, path_params='', query_params='', payload=''):
+    def build_response(self, api_response, path_params, query_params, payload):
         is_ok = api_response.ok
 
         if not is_ok and api_response.status_code == 401:
@@ -88,9 +99,7 @@ class _ReportingAPI(_VDAPIService):
         else:
             resp_json = api_response.json
 
-        return self.__RESPONSES_OBJECT__(self, resp_json, path_params,
-                                             query_params, self.__RESPONSE_OBJECT__,
-                                             is_ok, payload)
+        return self.__RESPONSES_OBJECT__(self, resp_json, path_params, query_params, is_ok, payload)
 
 
     def run(self, start_date=None, end_date=None, interval=None, dimensions=None,
@@ -146,6 +155,5 @@ class _TrafficQualityReport(_ReportingAPI):
 
     __API__ = "traffic_quality_reports"
     __RESPONSES_OBJECT__ = _ReportingResponse
-
 
 

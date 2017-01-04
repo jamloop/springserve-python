@@ -248,7 +248,6 @@ class _VDAPIMultiResponse(_VDAPIResponse):
         self.response_object = response_object
         #build out the initial set of objects
         self._build_cache(self.raw)
-        self.dataframe = None
 
     def _build_cache(self, objects):
         self._object_cache.extend([self._build_response_object(x) for x in
@@ -279,7 +278,8 @@ class _VDAPIMultiResponse(_VDAPIResponse):
     def _build_response_object(self, data):
         return self.response_object(self._service, data,
                                     self._path_params,
-                                    self._query_params, True)
+                                    self._query_params, True,
+                                    payload='')
 
     def __getitem__(self, key):
         if not isinstance(key, int):
