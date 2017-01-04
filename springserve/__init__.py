@@ -3,6 +3,8 @@ from __future__ import absolute_import
 
 import six
 
+import pandas
+
 if six.PY3:
     from builtins import input
     from builtins import object
@@ -235,11 +237,15 @@ class _VDAPISingleResponse(_VDAPIResponse):
 
 class _VDAPIMultiResponse(_VDAPIResponse):
 
-    def __init__(self, service, api_response_data, path_params, query_params,
+    def __init__(self, service, api_response_data, path_params, query_params, payload,
                  response_object, ok):
 
         super(_VDAPIMultiResponse, self).__init__(service, api_response_data,
                                                   path_params, query_params, ok)
+        self._payload = payload
+        self.current_page = 1
+        self.all_pages_gotten = False
+        self.dataframe = None
         self._object_cache = []
         self._current_page = 1
         self._all_pages_gotten = False
@@ -277,6 +283,7 @@ class _VDAPIMultiResponse(_VDAPIResponse):
         return self.response_object(self._service, data,
                                     self._path_params,
                                     self._query_params, True)
+
     def __getitem__(self, key):
         if not isinstance(key, int):
             raise Exception("Must be an index ")
@@ -352,8 +359,9 @@ class _VDAPIService(object):
         """
         return "/" + self.__API__
 
-    def build_response(self, api_response, path_params, query_params):
+    def build_response(self, api_response, path_params, query_params, payload=''):
         is_ok = api_response.ok
+        is_report = False
 
         if not is_ok and api_response.status_code == 401:
             raise VDAuthError("Need to Re-Auth")
@@ -363,10 +371,14 @@ class _VDAPIService(object):
         else:
             resp_json = api_response.json
 
-        if isinstance(resp_json, list):
+        if 'data' in resp_json:
+            if isinstance(resp_json['data'], list):
+                is_report = True
+
+        if isinstance(resp_json, list) or is_report:
             #wrap it in a multi container
             return self.__RESPONSES_OBJECT__(self, resp_json, path_params,
-                                             query_params, self.__RESPONSE_OBJECT__,
+                                             query_params, payload, self.__RESPONSE_OBJECT__,
                                              is_ok)
 
         return self.__RESPONSE_OBJECT__(self, resp_json, path_params,
@@ -453,7 +465,8 @@ class _VDAPIService(object):
                                         data = _json.dumps(data)
                              ),
                     path_param,
-                    query_params
+                    query_params,
+                    data
             )
         except VDAuthError as e:
             #we only retry if we are redo'n on an auto reauth
