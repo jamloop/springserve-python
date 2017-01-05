@@ -7,10 +7,6 @@ from time import sleep
 
 import pandas
 
-from link import lnk
-
-msg = lnk.msg
-
 class _ReportingResponse(_VDAPIMultiResponse):
 
     def __init__(self, service, api_response_data, path_params, query_params,
@@ -78,6 +74,11 @@ class _ReportingAPI(_VDAPIService):
 
     def _get_report(self, payload):
         response = self.post(data=payload)
+        #something bad happened
+        if not response.ok:
+            return response
+        if 'report_id' not in response.raw:
+            raise('report_id field not in response: {}'.format(response.raw))
         self._report_id = response.raw['report_id']
         payload['report_id'] = self._report_id
         if 'status' not in response.raw:
