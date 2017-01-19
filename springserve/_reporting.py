@@ -49,7 +49,6 @@ class _ReportingResponse(_VDAPIMultiResponse):
         if clear_previous:
             self.dataframe = new_data
         else:
-            self.to_self.dataframe()
             self.dataframe = self.dataframe.append(new_data)
         self._current_page += 1
         return True
