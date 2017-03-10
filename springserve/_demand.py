@@ -1,5 +1,5 @@
 
-from . import _VDAPIService
+from . import _VDAPIService, _VDDuplicateableResponse
 
 class _DemandTagAPI(_VDAPIService):
 
