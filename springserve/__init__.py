@@ -329,6 +329,12 @@ def _format_params(params):
 
     return _params
 
+class _VDDuplicateableResponse(_VDAPISingleResponse):
+
+    def duplicate(self, **kwargs):
+        return self._service.get("{}/duplicate".format(self.id), account_id = self.account_id)
+
+ 
 
 class VDAuthError(Exception):
     pass
