@@ -1,7 +1,7 @@
 
 from . import _VDAPIService, _VDAPIResponse, _VDAPISingleResponse
 
-class _DomainListResponse(_VDAPIResponse):
+class _DomainListResponse(_VDAPISingleResponse):
     """
     Override to give you access to the actual domains
     """
