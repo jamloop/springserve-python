@@ -112,7 +112,8 @@ class _TabComplete(object):
 
 class _VDAPIResponse(_TabComplete):
 
-    def __init__(self, service, api_response_data, path_params, query_params, ok, payload=''):
+    def __init__(self, service, api_response_data, path_params, query_params,
+                 ok, payload='', injected_account_id = None):
         super(_VDAPIResponse, self).__init__()
         self._service = service
         self._raw_response = api_response_data
@@ -120,6 +121,7 @@ class _VDAPIResponse(_TabComplete):
         self._query_params = query_params or {}
         self._ok = ok
         self._payload = payload
+        self._injected_account_id = injected_account_id
 
     @property
     def ok(self):
@@ -172,11 +174,14 @@ class _VDAPIResponse(_TabComplete):
 
 class _VDAPISingleResponse(_VDAPIResponse):
 
-    def __init__(self, service, api_response_data, path_params, query_params, ok, payload=''):
+    def __init__(self, service, api_response_data, path_params, query_params,
+                 ok, payload='', injected_account_id = None):
         self._dirty = {}
         super(_VDAPISingleResponse, self).__init__(service, api_response_data,
-                                                   path_params, query_params, ok, payload)
-
+                                                   path_params, query_params,
+                                                   ok, payload,
+                                                   injected_account_id)
+    
     def set_dirty(self, field):
         """
         you need this for nested fields that you have changed
@@ -203,9 +208,16 @@ class _VDAPISingleResponse(_VDAPIResponse):
 
         if dirty_only:
             payload = self._dirty
+        
+        try:
+            account_id = self.account_id
+        except Exception as e:
+            if self._injected_account_id:
+                account_id = self._injected_account_id
+            else:
+                raise e
 
-        return self._service.put(self.id, payload, account_id =
-                                 self.account_id, **kwargs)
+        return self._service.put(self.id, payload, account_id = account_id , **kwargs)
 
     def duplicate(self, **kwargs):
 
@@ -236,7 +248,7 @@ class _VDAPISingleResponse(_VDAPIResponse):
 class _VDAPIMultiResponse(_VDAPIResponse):
 
     def __init__(self, service, api_response_data, path_params, query_params,
-                 response_object, ok, payload=''):
+                 response_object, ok, payload='', injected_account_id=None):
 
         super(_VDAPIMultiResponse, self).__init__(service, api_response_data,
                                                   path_params, query_params, ok, payload)
@@ -244,6 +256,7 @@ class _VDAPIMultiResponse(_VDAPIResponse):
         self._object_cache = []
         self._current_page = 1
         self._all_pages_gotten = False
+        self._injected_account_id = injected_account_id
         self.response_object = response_object
         #build out the initial set of objects
         self._build_cache(self.raw)
@@ -278,7 +291,8 @@ class _VDAPIMultiResponse(_VDAPIResponse):
         return self.response_object(self._service, data,
                                     self._path_params,
                                     self._query_params, True,
-                                    payload='')
+                                    payload='', 
+                                    injected_account_id = self._injected_account_id)
 
     def __getitem__(self, key):
         if not isinstance(key, int):
@@ -346,7 +360,7 @@ class _VDAPIService(object):
     __RESPONSES_OBJECT__ = _VDAPIMultiResponse
 
     def __init__(self):
-        pass
+        self.account_id = None
 
     @property
     def endpoint(self):
@@ -371,15 +385,16 @@ class _VDAPIService(object):
             resp_json = {}
         else:
             resp_json = api_response.json
-
+    
         if isinstance(resp_json, list):
             #wrap it in a multi container
             return self.__RESPONSES_OBJECT__(self, resp_json, path_params,
                                              query_params, self.__RESPONSE_OBJECT__,
-                                             is_ok, payload)
+                                             is_ok, payload, self.account_id)
 
         return self.__RESPONSE_OBJECT__(self, resp_json, path_params,
-                                        query_params,is_ok, payload)
+                                        query_params,is_ok, payload,
+                                        self.account_id)
 
     def get_raw(self, path_param=None, reauth=False, **query_params):
         """
@@ -530,7 +545,7 @@ class _VDAPIService(object):
 
 from ._supply import _SupplyTagAPI, _SupplyPartnerAPI, _SupplyGroupAPI
 from ._demand import _DemandTagAPI, _DemandPartnerAPI, _DemandGroupAPI
-from ._common import _DomainListAPI, _BillAPI
+from ._common import _DomainListAPI, _BillAPI, _KeyAPI
 from ._reporting import _ReportingAPI, _TrafficQualityReport
 from ._account import _AccountAPI, _UserAPI
 from ._direct_connect import _DirectConnectionAPI
@@ -546,6 +561,8 @@ demand_partners = _DemandPartnerAPI()
 direct_connections = _DirectConnectionAPI()
 
 domain_lists = _DomainListAPI()
+
+keys = _KeyAPI()
 
 _object_change_messages = _ObjectChangeMessagesAPI()
 

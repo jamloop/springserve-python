@@ -101,3 +101,27 @@ class _BillAPI(_VDAPIService):
 
     __API__ = "bills"
     __RESPONSE_OBJECT__ = _BillResponse
+
+class _ValueAPI(_VDAPIService):
+
+    __API__ = "values"
+
+    def __init__(self, key):
+        self.key_id = key.id
+        self.account_id = key.account_id 
+
+    @property
+    def endpoint(self):
+       return "/keys/{}/values".format(self.key_id)
+
+
+class _KeyResponse(_VDAPISingleResponse):
+
+    def get_values(self):
+        return _ValueAPI(self).get()
+ 
+class _KeyAPI(_VDAPIService):
+
+    __API__ = "keys"
+    __RESPONSE_OBJECT__ = _KeyResponse
+
