@@ -361,7 +361,6 @@ class _VDAPIService(object):
 
     def __init__(self):
         self.account_id = None
-        pass
 
     @property
     def endpoint(self):

@@ -106,8 +106,9 @@ class _ValueAPI(_VDAPIService):
 
     __API__ = "values"
 
-    def __init__(self, key_id):
-        self.key_id = key_id
+    def __init__(self, key):
+        self.key_id = key.id
+        self.account_id = key.account_id 
 
     @property
     def endpoint(self):
@@ -117,7 +118,7 @@ class _ValueAPI(_VDAPIService):
 class _KeyResponse(_VDAPISingleResponse):
 
     def get_values(self):
-        return _ValueAPI(self.id).get()
+        return _ValueAPI(self).get()
  
 class _KeyAPI(_VDAPIService):
 
