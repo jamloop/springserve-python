@@ -71,6 +71,7 @@ class _BillItemAPI(_VDAPIService):
     __API__ = "bill_items"
 
     def __init__(self, bill_id):
+        super(_BillItemAPI, self).__init__()
         self.bill_id = bill_id
 
     @property
@@ -107,6 +108,7 @@ class _ValueAPI(_VDAPIService):
     __API__ = "values"
 
     def __init__(self, key):
+        super(_ValueAPI, self).__init__()
         self.key_id = key.id
         self.account_id = key.account_id 
 

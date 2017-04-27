@@ -283,7 +283,7 @@ class _VDAPIMultiResponse(_VDAPIResponse):
         if self._is_last_page(resp):
             self._all_pages_gotten = True
             return
-
+        
         self._build_cache(resp.json)
         self._current_page += 1
 
@@ -295,6 +295,7 @@ class _VDAPIMultiResponse(_VDAPIResponse):
                                     injected_account_id = self._injected_account_id)
 
     def __getitem__(self, key):
+
         if not isinstance(key, int):
             raise Exception("Must be an index ")
         if key >= len(self._object_cache):
