@@ -6,6 +6,7 @@ class _DemandTagKeyAPI(_VDAPIService):
     __API__ = "demand_tags"
 
     def __init__(self, demand_tag):
+        super(_DemandTagKeyAPI, self).__init__()
         self.demand_tag_id = demand_tag.id
         self.account_id = demand_tag.account_id
 
