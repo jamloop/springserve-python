@@ -121,6 +121,9 @@ class _KeyResponse(_VDAPISingleResponse):
 
     def get_values(self):
         return _ValueAPI(self).get()
+
+    def add_value(self, data, **kwargs):
+        return _ValueAPI(self).post(data, **kwargs)
  
 class _KeyAPI(_VDAPIService):
 

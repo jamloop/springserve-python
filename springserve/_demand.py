@@ -29,6 +29,9 @@ class _DemandTagResponse(_VDDuplicateableResponse):
         # Need to make a new one per bill
         return _DemandTagKeyAPI(self).get()
 
+    def add_key(self, data, **kwargs):
+        return _DemandTagKeyAPI(self).post(data, **kwargs)
+
 class _DemandTagAPI(_VDAPIService):
 
     __RESPONSE_OBJECT__ = _DemandTagResponse
