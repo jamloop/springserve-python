@@ -26,7 +26,7 @@ try:
 except:
     print("problem loading link, this is ok on the install")
 
-from .springserve_utils.decorators import raw_response_retry
+from ._decorators import raw_response_retry
 
 _API = None
 _ACCOUNT = None
