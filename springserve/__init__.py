@@ -8,7 +8,7 @@ if six.PY3:
     from builtins import object
 
 #import all of this version information
-__version__ = '0.3.8'
+__version__ = '0.3.9'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -25,6 +25,8 @@ try:
     _msg = _lnk.msg
 except:
     print("problem loading link, this is ok on the install")
+
+from springserve.springserve_utils.decorators import raw_response_retry
 
 _API = None
 _ACCOUNT = None
@@ -397,6 +399,7 @@ class _VDAPIService(object):
                                         query_params,is_ok, payload,
                                         self.account_id)
 
+    @raw_response_retry
     def get_raw(self, path_param=None, reauth=False, **query_params):
         """
         Get the raw http response for this object.  This is rarely used by a
