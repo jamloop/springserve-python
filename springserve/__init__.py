@@ -7,8 +7,8 @@ if six.PY3:
     from builtins import input
     from builtins import object
 
-#import all of this version information
-__version__ = '0.4.0'
+# import all of this version information
+__version__ = '0.5.0'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -31,6 +31,7 @@ from ._decorators import raw_response_retry
 _API = None
 _ACCOUNT = None
 _DEFAULT_BASE_URL = "https://video.springserve.com/api/v0"
+
 
 def setup_config():
     """
@@ -72,6 +73,7 @@ def setup_config():
     print("done: refreshing config")
     _lnk.fresh()
 
+
 def API(reauth=False):
     """
     Get the raw API object.  This is rarely used directly by a client of this
@@ -88,19 +90,21 @@ def API(reauth=False):
                 try:
                     _API = _lnk("springserve.{}".format("__default__"))
                 except:
-                    #this is to keep backwards compatiblity
+                    # this is to keep backwards compatiblity
                     _API = _lnk.springserve
             _API.headers.update({'springserve-sdk': __version__})
         except Exception as e:
             raise Exception("""Error authenticating: check your link.config to
                             make sure your username, password and url are
-                            correct""" )
+                            correct""")
     return _API
+
 
 def switch_account(account_name="__default__"):
     global _ACCOUNT
     _ACCOUNT = account_name
     API(True)
+
 
 class _TabComplete(object):
     """
@@ -115,7 +119,7 @@ class _TabComplete(object):
 class _VDAPIResponse(_TabComplete):
 
     def __init__(self, service, api_response_data, path_params, query_params,
-                 ok, payload='', injected_account_id = None):
+                 ok, payload='', injected_account_id=None):
         super(_VDAPIResponse, self).__init__()
         self._service = service
         self._raw_response = api_response_data
@@ -161,7 +165,7 @@ class _VDAPIResponse(_TabComplete):
         try:
             return self.__getattribute__(key)
         except AttributeError as e:
-            #makes unpickling work?
+            # makes unpickling work?
             if key.startswith("__"):
                 raise e
             return self._raw_response[key]
@@ -177,13 +181,13 @@ class _VDAPIResponse(_TabComplete):
 class _VDAPISingleResponse(_VDAPIResponse):
 
     def __init__(self, service, api_response_data, path_params, query_params,
-                 ok, payload='', injected_account_id = None):
+                 ok, payload='', injected_account_id=None):
         self._dirty = {}
         super(_VDAPISingleResponse, self).__init__(service, api_response_data,
                                                    path_params, query_params,
                                                    ok, payload,
                                                    injected_account_id)
-    
+
     def set_dirty(self, field):
         """
         you need this for nested fields that you have changed
@@ -204,13 +208,13 @@ class _VDAPISingleResponse(_VDAPIResponse):
 
             An API response object
         """
-        #if they have dirty fields only send those
+        # if they have dirty fields only send those
 
         payload = self.raw
 
         if dirty_only:
             payload = self._dirty
-        
+
         try:
             account_id = self.account_id
         except Exception as e:
@@ -219,13 +223,13 @@ class _VDAPISingleResponse(_VDAPIResponse):
             else:
                 raise e
 
-        return self._service.put(self.id, payload, account_id = account_id , **kwargs)
+        return self._service.put(self.id, payload, account_id=account_id, **kwargs)
 
     def duplicate(self, **kwargs):
 
         payload = self.raw.copy()
         payload.update(kwargs)
-        return self._service.new(payload, account_id = self.account_id)
+        return self._service.new(payload, account_id=self.account_id)
 
     def __setattr__(self, attr, value):
         """
@@ -260,7 +264,7 @@ class _VDAPIMultiResponse(_VDAPIResponse):
         self._all_pages_gotten = False
         self._injected_account_id = injected_account_id
         self.response_object = response_object
-        #build out the initial set of objects
+        # build out the initial set of objects
         self._build_cache(self.raw)
 
     def _build_cache(self, objects):
@@ -268,7 +272,6 @@ class _VDAPIMultiResponse(_VDAPIResponse):
                                    objects])
 
     def _is_last_page(self, resp):
-        #this means we
         return (not resp or not resp.json)
 
     def _get_next_page(self):
@@ -285,16 +288,17 @@ class _VDAPIMultiResponse(_VDAPIResponse):
         if self._is_last_page(resp):
             self._all_pages_gotten = True
             return
-        
+
         self._build_cache(resp.json)
         self._current_page += 1
 
     def _build_response_object(self, data):
         return self.response_object(self._service, data,
                                     self._path_params,
-                                    self._query_params, True,
-                                    payload='', 
-                                    injected_account_id = self._injected_account_id)
+                                    self._query_params,
+                                    True,
+                                    payload='',
+                                    injected_account_id=self._injected_account_id)
 
     def __getitem__(self, key):
 
@@ -334,27 +338,29 @@ def _format_url(endpoint, path_param):
 
     return _url
 
+
 def _format_params(params):
 
     _params = {}
 
     for key, value in params.items():
         if isinstance(value, list):
-            #make sure any list has the [] on it
+            # make sure any list has the [] on it
             key = "{}[]".format(key.lstrip("[]"))
         _params[key] = value
 
     return _params
 
+
 class _VDDuplicateableResponse(_VDAPISingleResponse):
 
     def duplicate(self, **kwargs):
-        return self._service.get("{}/duplicate".format(self.id), account_id = self.account_id)
+        return self._service.get("{}/duplicate".format(self.id), account_id=self.account_id)
 
- 
 
 class VDAuthError(Exception):
     pass
+
 
 class _VDAPIService(object):
 
@@ -388,15 +394,15 @@ class _VDAPIService(object):
             resp_json = {}
         else:
             resp_json = api_response.json
-    
+
         if isinstance(resp_json, list):
-            #wrap it in a multi container
+            # wrap it in a multi container
             return self.__RESPONSES_OBJECT__(self, resp_json, path_params,
                                              query_params, self.__RESPONSE_OBJECT__,
                                              is_ok, payload, self.account_id)
 
         return self.__RESPONSE_OBJECT__(self, resp_json, path_params,
-                                        query_params,is_ok, payload,
+                                        query_params, is_ok, payload,
                                         self.account_id)
 
     @raw_response_retry
@@ -407,7 +413,7 @@ class _VDAPIService(object):
         """
         params = _format_params(query_params)
         return API(reauth=reauth).get(_format_url(self.endpoint, path_param),
-                                      params = params)
+                                      params=params)
 
     def get(self, path_param=None, reauth=False, **query_params):
         """
@@ -441,78 +447,85 @@ class _VDAPIService(object):
                 query_params
             )
         except VDAuthError as e:
-            #we only retry if we are redo'n on an auto reauth
+            # we only retry if we are redo'n on an auto reauth
             if not reauth:
                 _msg.info("Reauthing and then retry")
                 return self.get(path_param, reauth=True, **query_params)
             raise e
 
+    @raw_response_retry
+    def _put_raw(self, path_param, data, reauth=False, **query_params):
+        params = _format_params(query_params)
+        return API(reauth=reauth).put(
+                    _format_url(self.endpoint, path_param),
+                    params=params,
+                    data=_json.dumps(data)
+                    )
 
     def put(self, path_param, data, reauth=False, **query_params):
         global API
 
         try:
-            params = _format_params(query_params)
             return self.build_response(
-                    API(reauth=reauth).put(
-                                          _format_url(self.endpoint, path_param),
-                                           params = params,
-                                          data = _json.dumps(data)
-                             ),
+                    self._put_raw(path_param, data, reauth=reauth, **query_params),
                     path_param,
                     query_params,
                     payload=data
             )
         except VDAuthError as e:
-            #we only retry if we are redo'n on an auto reauth
+            # we only retry if we are redo'n on an auto reauth
             if not reauth:
                 _msg.info("Reauthing and then retry")
                 return self.put(path_param, data, reauth=True, **query_params)
             raise e
 
+    @raw_response_retry
+    def _post_raw(self, data, path_param="", reauth=False, **query_params):
+        params = _format_params(query_params)
+        return API(reauth=reauth).post(
+                _format_url(self.endpoint, path_param),
+                params=params,
+                data=_json.dumps(data)
+                )
 
-    def post(self, data, path_param = "", reauth=False, **query_params):
+    def post(self, data, path_param="", reauth=False, **query_params):
         global API
         try:
-            params = _format_params(query_params)
             return self.build_response(
-                    API(reauth=reauth).post(
-                                        _format_url(self.endpoint, path_param),
-                                        params=params,
-                                        data = _json.dumps(data)
-                             ),
-                    path_param,
-                    query_params,
-                    payload=data
+                self._post_raw(data, path_param, reauth=reauth, **query_params),
+                path_param,
+                query_params,
+                payload=data
             )
         except VDAuthError as e:
-            #we only retry if we are redo'n on an auto reauth
+            # we only retry if we are redo'n on an auto reauth
             if not reauth:
                 _msg.info("Reauthing and then retry")
                 return self.new(data, path_param, reauth=True, **query_params)
-            #means that we had already tried a reauth and it failed
+            # means that we had already tried a reauth and it failed
             raise e
 
-    def delete(self, path_param = "", reauth=False, **query_params):
+    def delete(self, path_param="", reauth=False, **query_params):
         global API
         try:
             params = _format_params(query_params)
             return self.build_response(
-                    API(reauth=reauth).delete(_format_url(self.endpoint, path_param),
-                                              params = params,
-                             ),
+                    API(reauth=reauth).delete(
+                        _format_url(self.endpoint, path_param),
+                        params=params,
+                        ),
                     path_param,
                     query_params
             )
         except VDAuthError as e:
-            #we only retry if we are redo'n on an auto reauth
+            # we only retry if we are redo'n on an auto reauth
             if not reauth:
                 _msg.info("Reauthing and then retry")
                 return self.delete(path_param, reauth=True, **query_params)
-            #means that we had already tried a reauth and it failed
+            # means that we had already tried a reauth and it failed
             raise e
 
-    def bulk_delete(self, data, path_param = "", reauth=False, **query_params):
+    def bulk_delete(self, data, path_param="", reauth=False, **query_params):
         """
         Delete an object.
         """
@@ -520,22 +533,23 @@ class _VDAPIService(object):
         try:
             params = _format_params(query_params)
             return self.build_response(
-                    API(reauth=reauth).delete(_format_url(self.endpoint, path_param),
-                                              params = params,
-                                              data = _json.dumps(data)
-                             ),
+                    API(reauth=reauth).delete(
+                        _format_url(self.endpoint, path_param),
+                        params=params,
+                        data=_json.dumps(data)
+                        ),
                     path_param,
                     query_params
             )
         except VDAuthError as e:
-            #we only retry if we are redo'n on an auto reauth
+            # we only retry if we are redo'n on an auto reauth
             if not reauth:
                 _msg.info("Reauthing and then retry")
                 return self.delete(data, path_param, reauth=True, **query_params)
-            #means that we had already tried a reauth and it failed
+            # means that we had already tried a reauth and it failed
             raise e
 
-    def new(self, data, path_param = "", reauth=False, **query_params):
+    def new(self, data, path_param="", reauth=False, **query_params):
         """
         Create a new object.  You need to pass in the required fields as a
         dictionary.  For instance::
@@ -544,7 +558,6 @@ class _VDAPIService(object):
             print resp.ok
         """
         return self.post(data, path_param, reauth, **query_params)
-
 
 
 from ._supply import _SupplyTagAPI, _SupplyPartnerAPI, _SupplyGroupAPI
@@ -579,10 +592,11 @@ supply_partners = _SupplyPartnerAPI()
 
 users = _UserAPI()
 
+
 def raw_get(path_param, **query_params):
     global API
     params = _format_params(query_params)
-    return API().get(_format_url("", path_param), params = params).json
+    return API().get(_format_url("", path_param), params=params).json
 
 
 def _install_ipython_completers():  # pragma: no cover
@@ -595,7 +609,7 @@ def _install_ipython_completers():  # pragma: no cover
         Add in all the methods of the _wrapped object so its
         visible in iPython as well
         """
-        prev_completions+=obj._tab_completions()
+        prev_completions += obj._tab_completions()
         return prev_completions
 
 
@@ -608,4 +622,3 @@ if "IPython" in _sys.modules:  # pragma: no cover
     except Exception:
         _msg.debug("Error loading tab completers")
         pass
-
