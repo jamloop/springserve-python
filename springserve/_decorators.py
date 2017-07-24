@@ -10,10 +10,14 @@ AWS ELB 5XX error looks like:
 """
 import time
 
-from link.wrappers.springservewrappers import SpringServeAPIResponseWrapper
-from link import lnk
+_msg = None
+try:
+    from link import lnk
+    from link.wrappers.springservewrappers import SpringServeAPIResponseWrapper
+    _msg = lnk.msg
+except ImportError:
+    pass
 
-msg = lnk.msg
 
 AWS_ELB_ERROR_MESSAGES = ("503 Service Temporarily Unavailable", "502 Bad Gateway")
 RACK_ATTACK_STATUS_CODE = 429
@@ -57,7 +61,7 @@ def raw_response_retry(api_call, limit=4, sleep_duration=5, backoff_factor=2):
                     )
 
             if aws_check or rack_attack_check:
-                msg.warn("Encountered rate-limit (attempt {}), sleeping".format(num_attempts))
+                _msg.warn("Encountered rate-limit (attempt {}), sleeping".format(num_attempts))
                 num_attempts += 1
                 time.sleep(sleeps)
                 sleeps *= backoff_factor
