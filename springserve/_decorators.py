@@ -15,7 +15,7 @@ try:
     from link import lnk
     from link.wrappers.springservewrappers import SpringServeAPIResponseWrapper
     _msg = lnk.msg
-except ImportError:
+except:
     pass
 
 
