@@ -45,6 +45,11 @@ class _DemandGroupAPI(_VDAPIService):
 
     __API__ = "demand_groups"
 
+class _ConnectedDemandAPI(_VDAPIService):
+
+    __RESPONSE_OBJECT__ = _DemandTagResponse
+    __API__ = "connected_demand"
+
 
 
 

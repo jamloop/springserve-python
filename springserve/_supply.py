@@ -15,5 +15,9 @@ class _SupplyGroupAPI(_VDAPIService):
 
     __API__ = "supply_groups"
 
+class _ConnectedSupplyAPI(_VDAPIService):
+
+    __API__ = "connected_supply"
+
 
 

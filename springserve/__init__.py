@@ -8,7 +8,7 @@ if six.PY3:
     from builtins import object
 
 # import all of this version information
-__version__ = '0.6.1'
+__version__ = '0.6.2'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -560,8 +560,8 @@ class _VDAPIService(object):
         return self.post(data, path_param, reauth, **query_params)
 
 
-from ._supply import _SupplyTagAPI, _SupplyPartnerAPI, _SupplyGroupAPI
-from ._demand import _DemandTagAPI, _DemandPartnerAPI, _DemandGroupAPI
+from ._supply import _SupplyTagAPI, _SupplyPartnerAPI, _SupplyGroupAPI, _ConnectedSupplyAPI
+from ._demand import _DemandTagAPI, _DemandPartnerAPI, _DemandGroupAPI, _ConnectedDemandAPI
 from ._common import _DomainListAPI, _BillAPI, _KeyAPI
 from ._reporting import _ReportingAPI, _TrafficQualityReport
 from ._account import _AccountAPI, _UserAPI
@@ -571,6 +571,9 @@ from ._object_change_messages import _ObjectChangeMessagesAPI
 accounts = _AccountAPI()
 
 bills = _BillAPI()
+
+connected_demand = _ConnectedDemandAPI()
+connected_supply = _ConnectedSupplyAPI()
 
 demand_groups = _DemandGroupAPI()
 demand_tags = _DemandTagAPI()
