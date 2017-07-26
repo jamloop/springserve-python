@@ -50,6 +50,10 @@ class _ConnectedDemandAPI(_VDAPIService):
     __RESPONSE_OBJECT__ = _DemandTagResponse
     __API__ = "connected_demand"
 
+class _CampaignAPI(_VDAPIService):
+
+    __API__ = "campaigns"
+
 
 
 

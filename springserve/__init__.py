@@ -561,7 +561,7 @@ class _VDAPIService(object):
 
 
 from ._supply import _SupplyTagAPI, _SupplyPartnerAPI, _SupplyGroupAPI, _ConnectedSupplyAPI
-from ._demand import _DemandTagAPI, _DemandPartnerAPI, _DemandGroupAPI, _ConnectedDemandAPI
+from ._demand import _DemandTagAPI, _DemandPartnerAPI, _DemandGroupAPI, _ConnectedDemandAPI, _CampaignAPI
 from ._common import _DomainListAPI, _BillAPI, _KeyAPI
 from ._reporting import _ReportingAPI, _TrafficQualityReport
 from ._account import _AccountAPI, _UserAPI
@@ -572,6 +572,7 @@ accounts = _AccountAPI()
 
 bills = _BillAPI()
 
+campaigns = _CampaignAPI()
 connected_demand = _ConnectedDemandAPI()
 connected_supply = _ConnectedSupplyAPI()
 
