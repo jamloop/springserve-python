@@ -41,9 +41,9 @@ class _DemandPartnerAPI(_VDAPIService):
 
     __API__ = "demand_partners"
 
-class _DemandGroupAPI(_VDAPIService):
+class _DemandLabelAPI(_VDAPIService):
 
-    __API__ = "demand_groups"
+    __API__ = "demand_labels"
 
 class _ConnectedDemandAPI(_VDAPIService):
 

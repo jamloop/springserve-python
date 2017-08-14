@@ -8,7 +8,7 @@ if six.PY3:
     from builtins import object
 
 # import all of this version information
-__version__ = '0.6.3'
+__version__ = '0.6.4'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -560,8 +560,8 @@ class _VDAPIService(object):
         return self.post(data, path_param, reauth, **query_params)
 
 
-from ._supply import _SupplyTagAPI, _SupplyPartnerAPI, _SupplyGroupAPI, _ConnectedSupplyAPI
-from ._demand import _DemandTagAPI, _DemandPartnerAPI, _DemandGroupAPI, _ConnectedDemandAPI, _CampaignAPI
+from ._supply import _SupplyTagAPI, _SupplyPartnerAPI, _SupplyLabelAPI, _ConnectedSupplyAPI
+from ._demand import _DemandTagAPI, _DemandPartnerAPI, _DemandLabelAPI, _ConnectedDemandAPI, _CampaignAPI
 from ._common import _DomainListAPI, _BillAPI, _KeyAPI
 from ._reporting import _ReportingAPI, _TrafficQualityReport
 from ._account import _AccountAPI, _UserAPI
@@ -576,7 +576,7 @@ campaigns = _CampaignAPI()
 connected_demand = _ConnectedDemandAPI()
 connected_supply = _ConnectedSupplyAPI()
 
-demand_groups = _DemandGroupAPI()
+demand_labels = _DemandLabelAPI()
 demand_tags = _DemandTagAPI()
 demand_partners = _DemandPartnerAPI()
 direct_connections = _DirectConnectionAPI()
@@ -590,7 +590,7 @@ _object_change_messages = _ObjectChangeMessagesAPI()
 reports = _ReportingAPI()
 quality_reports = _TrafficQualityReport()
 
-supply_groups = _SupplyGroupAPI()
+supply_labels = _SupplyLabelAPI()
 supply_tags = _SupplyTagAPI()
 supply_partners = _SupplyPartnerAPI()
 
