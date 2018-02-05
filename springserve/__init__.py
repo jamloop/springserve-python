@@ -7,12 +7,8 @@ if six.PY3:
     from builtins import input
     from builtins import object
 
-# import all of this version information
-__version__ = '0.6.4'
-__author__ = 'dave@springserve.com'
-__license__ = 'Apache 2.0'
-__copyright__ = 'Copyright 2016 Springserve'
-__title__ = 'springserve'
+
+__version__ = '0.6.6' #TODO: This is duplicated in the build.  Need to figure how to set this once 
 
 import sys as _sys
 import json as _json
