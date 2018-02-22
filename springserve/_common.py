@@ -128,6 +128,69 @@ class _AppBundleListAPI(_VDAPIService):
     __API__ = "app_bundle_lists"
     __RESPONSE_OBJECT__ = _AppBundleListResponse
 
+class _AppNameListResponse(_VDAPISingleResponse):
+    """
+    Override to give you access to the actual domains
+    """
+
+    def get_names(self, **kwargs):
+        """
+        Get the list of domains that are in this domain list
+
+            d = springserve.domain_list.get(id)
+            domains = d.get_domains()
+
+            for domain in domains:
+                print domain.name
+
+        """
+        return self._service.get("{}/app_names".format(self.id), **kwargs)
+    
+    def _to_list(self, input_list):
+        """
+        The api needs a list, and you can't serialize sets, or Series
+        """
+        if isinstance(input_list, list):
+            return input_list
+
+        return [x for x in input_list]
+
+    def add_names(self, names):
+        """
+        Add a list of domains to this domain list
+
+            d = springserve.domain_list.get(id)
+            d.add_domains(['blah.com', 'blah2.com'])
+
+        domains: List of domains you would like to add 
+        """
+        payload = {'app_names':self._to_list(names)}
+        resp = self._service.post(payload,
+                                  path_param='{}/app_names/bulk_create'.format(self.id)
+                                 )
+        return resp
+
+    def remove_names(self, domains):
+        """
+        Add a list of domains to this domain list
+
+            d = springserve.domain_list.get(id)
+            d.remove_domains(['blah.com', 'blah2.com'])
+
+        domains: List of domains you would like to add 
+        """
+        payload = {'app_names':self._to_list(domains)}
+        resp = self._service.bulk_delete(payload,
+                                  path_param='{}/app_names/bulk_delete'.format(self.id)
+                                 )
+        return resp
+
+
+class _AppNameListAPI(_VDAPIService):
+
+    __API__ = "app_name_lists"
+    __RESPONSE_OBJECT__ = _AppNameListResponse
+
 
 class _BillItemAPI(_VDAPIService):
 
