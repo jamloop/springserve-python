@@ -8,7 +8,7 @@ if six.PY3:
     from builtins import object
 
 
-__version__ = '0.6.8' #TODO: This is duplicated in the build.  Need to figure how to set this once 
+__version__ = '0.6.9' #TODO: This is duplicated in the build.  Need to figure how to set this once 
 
 import sys as _sys
 import json as _json
@@ -389,7 +389,10 @@ class _VDAPIService(object):
         if api_response.status_code == 204:  # this means empty
             resp_json = {}
         else:
-            resp_json = api_response.json
+            try: 
+                resp_json = api_response.json
+            except:
+                resp_json = {"error": "error parsing json response"} 
 
         if isinstance(resp_json, list):
             # wrap it in a multi container
