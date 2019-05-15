@@ -13,7 +13,7 @@ __title__ = 'springserve'
 dir = os.path.split(os.path.abspath(__file__))[0]
 
 
-DESCRIPTION = "API Library for video.springserve.com"
+DESCRIPTION = "API Library for console.springserve.com"
 LONG_DESCRIPTION = """Springserve is a video adserver, and this library allows you
 to interface with its api to do read/write and reporting requests """
 URL = 'http://www.springserve.com'
