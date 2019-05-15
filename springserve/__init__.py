@@ -8,7 +8,7 @@ if six.PY3:
     from builtins import object
 
 
-__version__ = '0.7.0' #TODO: This is duplicated in the build.  Need to figure how to set this once 
+__version__ = '0.7.1' #TODO: This is duplicated in the build.  Need to figure how to set this once 
 
 import sys as _sys
 import json as _json
@@ -26,7 +26,7 @@ from ._decorators import raw_response_retry
 
 _API = None
 _ACCOUNT = None
-_DEFAULT_BASE_URL = "https://video.springserve.com/api/v0"
+_DEFAULT_BASE_URL = "https://console.springserve.com/api/v0"
 
 
 def setup_config():
