@@ -3,7 +3,7 @@ Python Library for accessing the Springserve API
 
 For more information on using the API, please refer to our Wiki:
 
-	https://wiki.springserve.com/display/SSD/API+-+Getting+Started
+https://wiki.springserve.com/display/SSD/API+-+Getting+Started
 
 Installation
 
