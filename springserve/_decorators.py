@@ -9,6 +9,7 @@ AWS ELB 5XX error looks like:
 </html>
 """
 import time
+import sys
 
 _msg = None
 try:
@@ -22,6 +23,12 @@ except:
 AWS_ELB_ERROR_MESSAGES = ("503 Service Temporarily Unavailable", "502 Bad Gateway")
 RACK_ATTACK_STATUS_CODE = 429
 RACK_ATTACK_MESSAGE = "Retry later\n"
+
+def is_resp_in_elb_error_messages(resp):
+    if (sys.version_info >= (3, 0)):
+        return any([e in resp.text for e in AWS_ELB_ERROR_MESSAGES])
+    else:
+        return any([e in resp.content for e in AWS_ELB_ERROR_MESSAGES])
 
 
 def raw_response_retry(api_call, limit=4, sleep_duration=5, backoff_factor=2):
@@ -51,7 +58,7 @@ def raw_response_retry(api_call, limit=4, sleep_duration=5, backoff_factor=2):
                     # content matches one of our error messages - note that ELB error
                     # messages will not be JSON (they are HTML strings) so cannot check
                     # resp.json attribute, as this will not always be valid
-                    any([e in resp.content for e in AWS_ELB_ERROR_MESSAGES])
+                    is_resp_in_elb_error_messages(resp)
                     )
 
             rack_attack_check = (
