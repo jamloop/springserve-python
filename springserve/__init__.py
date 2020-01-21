@@ -8,7 +8,7 @@ if six.PY3:
     from builtins import object
 
 
-__version__ = '0.7.2' #TODO: This is duplicated in the build.  Need to figure how to set this once 
+__version__ = '0.7.3' #TODO: This is duplicated in the build.  Need to figure how to set this once 
 
 import sys as _sys
 import json as _json
@@ -559,7 +559,7 @@ class _VDAPIService(object):
         return self.post(data, path_param, reauth, **query_params)
 
 
-from ._supply import _SupplyTagAPI, _SupplyPartnerAPI, _SupplyLabelAPI, _ConnectedSupplyAPI
+from ._supply import _SupplyTagAPI, _SupplyPartnerAPI, _SupplyLabelAPI, _ConnectedSupplyAPI, _SupplyRouterAPI
 from ._demand import _DemandTagAPI, _DemandPartnerAPI, _DemandLabelAPI, _ConnectedDemandAPI, _CampaignAPI
 from ._common import _DomainListAPI, _BillAPI, _KeyAPI, _AppBundleListAPI, _AppNameListAPI, _DeviceIdListAPI, _IpListAPI
 from ._reporting import _ReportingAPI, _TrafficQualityReport
@@ -595,6 +595,7 @@ quality_reports = _TrafficQualityReport()
 
 supply_labels = _SupplyLabelAPI()
 supply_tags = _SupplyTagAPI()
+supply_routers = _SupplyRouterAPI()
 supply_partners = _SupplyPartnerAPI()
 
 users = _UserAPI()

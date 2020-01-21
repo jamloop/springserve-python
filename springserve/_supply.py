@@ -19,5 +19,10 @@ class _ConnectedSupplyAPI(_VDAPIService):
 
     __API__ = "connected_supply"
 
+class _SupplyRouterAPI(_VDAPIService):
+
+    __API__ = "supply_routers"
+
+
 
 
