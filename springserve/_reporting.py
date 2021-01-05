@@ -44,6 +44,7 @@ class _ReportingResponse(_VDAPIMultiResponse):
             self._all_pages_gotten = True
             return False
 
+        self._raw_response = resp.raw
         new_data = pandas.DataFrame(resp.raw['data'])
         #clear previous data
         if clear_previous:
