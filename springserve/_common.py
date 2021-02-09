@@ -1,10 +1,47 @@
 
 from . import _VDAPIService, _VDAPIResponse, _VDAPISingleResponse
 
-class _DomainListResponse(_VDAPISingleResponse):
+class _BulkListResponse(_VDAPISingleResponse):
+
+    __LIST_API__ = ""
+    __LIST_PAYLOAD_ENTRY=""
+
+    def _to_list(self, input_list):
+        """
+        The api needs a list, and you can't serialize sets, or Series
+        """
+        if isinstance(input_list, list):
+            return input_list
+
+        return [x for x in input_list]
+
+    def get_list(self, **kwargs): 
+        return self._service.get("{}/{}".format(self.id, self._LIST_API__), **kwargs)
+
+    def _bulk_path(self, param):
+        return "{}/{}/{}".format(self.id, self.__LIST_API__, param)
+
+    def _bulk_post(self, input_list, path):
+        payload = {self.__LIST_PAYLOAD_ENTRY__:self._to_list(input_list)}
+        resp = self._service.post(payload, path_param=self._bulk_path(path))
+        return resp
+
+    def bulk_create(self, input_list): 
+        return self._bulk_post(input_list, 'bulk_create')
+
+    def bulk_replace(self, input_list):
+        return self._bulk_post(input_list, 'bulk_replace')
+
+    def bulk_delete(self, input_list):
+        return self._bulk_post(input_list, 'bulk_delete')
+
+
+class _DomainListResponse(_BulkListResponse):
     """
     Override to give you access to the actual domains
     """
+    __LIST_API__ = "domains"
+    __LIST_PAYLOAD_ENTRY="names"
 
     def get_domains(self, **kwargs):
         """
@@ -17,17 +54,8 @@ class _DomainListResponse(_VDAPISingleResponse):
                 print domain.name
 
         """
-        return self._service.get("{}/domains".format(self.id), **kwargs)
+        return self.get_list(**kwargs)
     
-    def _to_list(self, input_list):
-        """
-        The api needs a list, and you can't serialize sets, or Series
-        """
-        if isinstance(input_list, list):
-            return input_list
-
-        return [x for x in input_list]
-
     def add_domains(self, domains):
         """
         Add a list of domains to this domain list
@@ -37,11 +65,7 @@ class _DomainListResponse(_VDAPISingleResponse):
 
         domains: List of domains you would like to add 
         """
-        payload = {'names':self._to_list(domains)}
-        resp = self._service.post(payload,
-                                  path_param='{}/domains/bulk_create'.format(self.id)
-                                 )
-        return resp
+        return self.bulk_create(domains)
 
     def remove_domains(self, domains):
         """
@@ -52,11 +76,7 @@ class _DomainListResponse(_VDAPISingleResponse):
 
         domains: List of domains you would like to add 
         """
-        payload = {'names':self._to_list(domains)}
-        resp = self._service.bulk_delete(payload,
-                                  path_param='{}/domains/bulk_delete'.format(self.id)
-                                 )
-        return resp
+        return self.bulk_delete(domains)
 
 
 class _DomainListAPI(_VDAPIService):
@@ -65,10 +85,12 @@ class _DomainListAPI(_VDAPIService):
     __RESPONSE_OBJECT__ = _DomainListResponse
 
 
-class _AppBundleListResponse(_VDAPISingleResponse):
+class _AppBundleListResponse(_BulkListResponse):
     """
     Override to give you access to the actual domains
     """
+    __LIST_API__ = "app_bundles"
+    __LIST_PAYLOAD_ENTRY="app_bundles"
 
     def get_bundles(self, **kwargs):
         """
@@ -81,17 +103,8 @@ class _AppBundleListResponse(_VDAPISingleResponse):
                 print domain.name
 
         """
-        return self._service.get("{}/app_bundles".format(self.id), **kwargs)
+        return self.get_list(**kwargs)
     
-    def _to_list(self, input_list):
-        """
-        The api needs a list, and you can't serialize sets, or Series
-        """
-        if isinstance(input_list, list):
-            return input_list
-
-        return [x for x in input_list]
-
     def add_bundles(self, bundles):
         """
         Add a list of domains to this domain list
@@ -101,13 +114,9 @@ class _AppBundleListResponse(_VDAPISingleResponse):
 
         domains: List of domains you would like to add 
         """
-        payload = {'app_bundles':self._to_list(bundles)}
-        resp = self._service.post(payload,
-                                  path_param='{}/app_bundles/bulk_create'.format(self.id)
-                                 )
-        return resp
+        return self.bulk_create(bundles)
 
-    def remove_bundles(self, domains):
+    def remove_bundles(self, bundles):
         """
         Add a list of domains to this domain list
 
@@ -116,11 +125,7 @@ class _AppBundleListResponse(_VDAPISingleResponse):
 
         domains: List of domains you would like to add 
         """
-        payload = {'app_bundles':self._to_list(domains)}
-        resp = self._service.bulk_delete(payload,
-                                  path_param='{}/app_bundles/bulk_delete'.format(self.id)
-                                 )
-        return resp
+        return self.bulk_delete(bundles)
 
 
 class _AppBundleListAPI(_VDAPIService):
@@ -128,10 +133,13 @@ class _AppBundleListAPI(_VDAPIService):
     __API__ = "app_bundle_lists"
     __RESPONSE_OBJECT__ = _AppBundleListResponse
 
-class _AppNameListResponse(_VDAPISingleResponse):
+class _AppNameListResponse(_BulkListResponse):
     """
     Override to give you access to the actual domains
     """
+
+    __LIST_API__ = "app_names"
+    __LIST_PAYLOAD_ENTRY="app_names"
 
     def get_names(self, **kwargs):
         """
@@ -144,17 +152,8 @@ class _AppNameListResponse(_VDAPISingleResponse):
                 print domain.name
 
         """
-        return self._service.get("{}/app_names".format(self.id), **kwargs)
+        return self.get_list(**kwargs)
     
-    def _to_list(self, input_list):
-        """
-        The api needs a list, and you can't serialize sets, or Series
-        """
-        if isinstance(input_list, list):
-            return input_list
-
-        return [x for x in input_list]
-
     def add_names(self, names):
         """
         Add a list of domains to this domain list
@@ -164,13 +163,9 @@ class _AppNameListResponse(_VDAPISingleResponse):
 
         domains: List of domains you would like to add 
         """
-        payload = {'app_names':self._to_list(names)}
-        resp = self._service.post(payload,
-                                  path_param='{}/app_names/bulk_create'.format(self.id)
-                                 )
-        return resp
+        return self.bulk_create(names)
 
-    def remove_names(self, domains):
+    def remove_names(self, names):
         """
         Add a list of domains to this domain list
 
@@ -179,11 +174,7 @@ class _AppNameListResponse(_VDAPISingleResponse):
 
         domains: List of domains you would like to add 
         """
-        payload = {'app_names':self._to_list(domains)}
-        resp = self._service.bulk_delete(payload,
-                                  path_param='{}/app_names/bulk_delete'.format(self.id)
-                                 )
-        return resp
+        return self.bulk_delete(names)
 
 
 class _AppNameListAPI(_VDAPIService):
@@ -192,10 +183,12 @@ class _AppNameListAPI(_VDAPIService):
     __RESPONSE_OBJECT__ = _AppNameListResponse
 
 
-class _DeviceIdListResponse(_VDAPISingleResponse):
+class _DeviceIdListResponse(_BulkListResponse):
     """
     Override to give you access to the actual device ids
     """
+    __LIST_API__ = "device_ids"
+    __LIST_PAYLOAD_ENTRY="device_ids"
 
     def get_device_ids(self, **kwargs):
         """
@@ -208,16 +201,7 @@ class _DeviceIdListResponse(_VDAPISingleResponse):
                 print id.device_id
 
         """
-        return self._service.get("{}/device_ids".format(self.id), **kwargs)
-
-    def _to_list(self, input_list):
-        """
-        The api needs a list, and you can't serialize sets, or Series
-        """
-        if isinstance(input_list, list):
-            return input_list
-
-        return [x for x in input_list]
+        return self.get_list(**kwargs)
 
     def add_device_ids(self, device_ids):
         """
@@ -228,11 +212,7 @@ class _DeviceIdListResponse(_VDAPISingleResponse):
 
         device_ids: List of device ids you would like to add
         """
-        payload = {'device_ids':self._to_list(device_ids)}
-        resp = self._service.post(payload,
-                                  path_param='{}/device_ids/bulk_create'.format(self.id)
-                                 )
-        return resp
+        return self.bulk_create(device_ids)
 
     def remove_device_ids(self, device_ids):
         """
@@ -243,11 +223,7 @@ class _DeviceIdListResponse(_VDAPISingleResponse):
 
         device_ids: List of device ids you would like to remove
         """
-        payload = {'device_ids':self._to_list(device_ids)}
-        resp = self._service.bulk_delete(payload,
-                                  path_param='{}/device_ids/bulk_delete'.format(self.id)
-                                 )
-        return resp
+        return self.bulk_delete(device_ids)
 
 
 class _DeviceIdListAPI(_VDAPIService):
@@ -256,10 +232,12 @@ class _DeviceIdListAPI(_VDAPIService):
     __RESPONSE_OBJECT__ = _DeviceIdListResponse
 
 
-class _IpListResponse(_VDAPISingleResponse):
+class _IpListResponse(_BulkListResponse):
     """
     Override to give you access to the actual ips
     """
+    __LIST_API__ = "ips"
+    __LIST_PAYLOAD_ENTRY="ips"
 
     def get_ips(self, **kwargs):
         """
@@ -272,16 +250,7 @@ class _IpListResponse(_VDAPISingleResponse):
                 print i.ip
 
         """
-        return self._service.get("{}/ips".format(self.id), **kwargs)
-
-    def _to_list(self, input_list):
-        """
-        The api needs a list, and you can't serialize sets, or Series
-        """
-        if isinstance(input_list, list):
-            return input_list
-
-        return [x for x in input_list]
+        return self.get_list(**kwargs)
 
     def add_ips(self, ips):
         """
@@ -292,11 +261,7 @@ class _IpListResponse(_VDAPISingleResponse):
 
         ips: List of ips you would like to add
         """
-        payload = {'ips':self._to_list(ips)}
-        resp = self._service.post(payload,
-                                  path_param='{}/ips/bulk_create'.format(self.id)
-                                 )
-        return resp
+        return self.bulk_create(ips)
 
     def remove_ips(self, ips):
         """
@@ -307,11 +272,7 @@ class _IpListResponse(_VDAPISingleResponse):
 
         ips: List of ips you would like to remove
         """
-        payload = {'ips':self._to_list(ips)}
-        resp = self._service.bulk_delete(payload,
-                                  path_param='{}/ips/bulk_delete'.format(self.id)
-                                 )
-        return resp
+        return self.bulk_delete(ips)
 
 
 class _IpListAPI(_VDAPIService):
