@@ -3,7 +3,7 @@ from setuptools import setup
 import os
 
 # import all of this version information
-__version__ = '0.7.8'
+__version__ = '0.7.9'
 __author__ = 'dave@springserve.com'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Springserve'
@@ -26,7 +26,7 @@ CLASSIFIERS = ['Development Status :: 4 - Beta',
 EMAIL = ''
 SETUP_ARGS = {}
 REQUIRES = ['requests>=2.0.0', 'requests_oauthlib>=0.4.0',
-            'link>=0.3.1','xmltodict', 'pandas', 'six' ]
+            'link>=0.3.1','xmltodict', 'pandas', 'six', 'requests-toolbelt' ]
 
 # write out the version file so we can keep track on what version the built
 # package is

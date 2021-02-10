@@ -8,11 +8,13 @@ if six.PY3:
     from builtins import object
 
 
-__version__ = '0.7.8' #TODO: This is duplicated in the build.  Need to figure how to set this once 
+__version__ = '0.7.9' #TODO: This is duplicated in the build.  Need to figure how to set this once 
 
 import sys as _sys
 import json as _json
 import getpass
+
+from requests_toolbelt import MultipartEncoder
 
 _msg = None
 
@@ -482,19 +484,31 @@ class _VDAPIService(object):
             raise e
 
     @raw_response_retry
-    def _post_raw(self, data, path_param="", reauth=False, **query_params):
+    def _post_raw(self, data, path_param="", reauth=False, files=None, **query_params):
         params = _format_params(query_params)
+
+        if not files:
+            return API(reauth=reauth).post(
+                    _format_url(self.endpoint, path_param),
+                    params=params,
+                    data=_json.dumps(data)
+                    )
+
+        m = MultipartEncoder(
+            fields=files
+        )
         return API(reauth=reauth).post(
                 _format_url(self.endpoint, path_param),
+                headers={'Content-Type': m.content_type},
                 params=params,
-                data=_json.dumps(data)
+                data=m
                 )
 
-    def post(self, data, path_param="", reauth=False, **query_params):
+    def post(self, data, path_param="", files=None, reauth=False, **query_params):
         global API
         try:
             return self.build_response(
-                self._post_raw(data, path_param, reauth=reauth, **query_params),
+                self._post_raw(data, path_param, reauth=reauth, files=files, **query_params),
                 path_param,
                 query_params,
                 payload=data
@@ -503,7 +517,7 @@ class _VDAPIService(object):
             # we only retry if we are redo'n on an auto reauth
             if not reauth:
                 _msg.info("Reauthing and then retry")
-                return self.new(data, path_param, reauth=True, **query_params)
+                return self.post(data, path_param, reauth=True, files=files, **query_params)
             # means that we had already tried a reauth and it failed
             raise e
 
@@ -527,19 +541,38 @@ class _VDAPIService(object):
             # means that we had already tried a reauth and it failed
             raise e
 
-    def bulk_delete(self, data, path_param="", reauth=False, **query_params):
+    def _raw_bulk_delete(self, data, path_param="", reauth=False, files=None, **query_params):
+        params = _format_params(query_params)
+        
+        if not files:
+            return API(reauth=reauth).delete(
+                _format_url(self.endpoint, path_param),
+                params=params,
+                data=_json.dumps(data)
+                )
+
+        m = MultipartEncoder(
+            fields=files
+        )
+
+        return API(reauth=reauth).delete(
+            _format_url(self.endpoint, path_param),
+            params=params,
+            headers={'Content-Type': m.content_type},
+            data=m
+            )
+
+    def bulk_delete(self, data, path_param="", reauth=False, files=None, **query_params):
         """
         Delete an object.
         """
         global API
         try:
-            params = _format_params(query_params)
             return self.build_response(
-                    API(reauth=reauth).delete(
-                        _format_url(self.endpoint, path_param),
-                        params=params,
-                        data=_json.dumps(data)
-                        ),
+                self._raw_bulk_delete(data, path_param=path_param,
+                                      reauth=reauth, files=files,
+                                      **query_params),
+                    
                     path_param,
                     query_params
             )
@@ -547,7 +580,8 @@ class _VDAPIService(object):
             # we only retry if we are redo'n on an auto reauth
             if not reauth:
                 _msg.info("Reauthing and then retry")
-                return self.delete(data, path_param, reauth=True, **query_params)
+                return self.buck_delete(data, path_param, reauth=True,
+                                        files=files, **query_params)
             # means that we had already tried a reauth and it failed
             raise e
 
