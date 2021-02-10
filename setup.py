@@ -26,7 +26,7 @@ CLASSIFIERS = ['Development Status :: 4 - Beta',
 EMAIL = ''
 SETUP_ARGS = {}
 REQUIRES = ['requests>=2.0.0', 'requests_oauthlib>=0.4.0',
-            'link>=0.3.1','xmltodict', 'pandas', 'six' ]
+            'link>=0.3.1','xmltodict', 'pandas', 'six', 'requests-toolbelt' ]
 
 # write out the version file so we can keep track on what version the built
 # package is

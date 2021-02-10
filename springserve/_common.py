@@ -21,29 +21,51 @@ class _BulkListResponse(_VDAPISingleResponse):
     def _bulk_path(self, param):
         return "{}/{}/{}".format(self.id, self.__LIST_API__, param)
 
-    def _bulk_post(self, input_list, path):
+    def _bulk_post(self, input_list, path, file_path=None):
+        
+        files = None
+        if file_path:
+            files={'csv_file': ('csv_file', open(file_path, 'rb'), "multipart/form-data") }
+            path = "file_{}".format(path)
+
         payload = {self.__LIST_PAYLOAD_ENTRY__:self._to_list(input_list)}
-        resp = self._service.post(payload, path_param=self._bulk_path(path))
+        resp = self._service.post(payload, path_param=self._bulk_path(path),
+                                  files=files)
         return resp
 
-    def bulk_create(self, input_list): 
+    def bulk_create(self, input_list=[], file_path=None): 
         """
         Appends this list to the existing list
-        """
-        return self._bulk_post(input_list, 'bulk_create')
 
-    def bulk_replace(self, input_list):
+            input_list: List of items to upload. Max 100k at a time
+            file_path: file path to a csv of items.  This can be much larger (in the millions)
+        """
+        return self._bulk_post(input_list, 'bulk_create', file_path=file_path)
+
+    def bulk_replace(self, input_list=[], file_path=None):
         """
         Replaces the existing list with this list
-        """
-        return self._bulk_post(input_list, 'bulk_replace')
 
-    def bulk_delete(self, input_list):
+            input_list: List of items to upload. Max 100k at a time
+            file_path: file path to a csv of items.  This can be much larger (in the millions)
+        """
+        return self._bulk_post(input_list, 'bulk_replace', file_path=file_path)
+
+    def bulk_delete(self, input_list=[], file_path=None):
         """
         removes these items from the existing list
         """
+        path = 'bulk_delete'
+        files = None
+        if file_path:
+            files={'csv_file': ('csv_file', open(file_path, 'rb'),
+                                "multipart/form-data")}
+            path = "file_{}".format(path)
+
         payload = {self.__LIST_PAYLOAD_ENTRY__:self._to_list(input_list)}
-        return self._service.bulk_delete(payload, path_param=self._bulk_path('bulk_delete'))
+        return self._service.bulk_delete(payload,
+                                         path_param=self._bulk_path(path),
+                                         files=files)
 
 
 class _DomainListResponse(_BulkListResponse):
