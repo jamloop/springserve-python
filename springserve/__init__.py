@@ -564,7 +564,7 @@ class _VDAPIService(object):
 
 from ._supply import _SupplyTagAPI, _SupplyPartnerAPI, _SupplyLabelAPI, _ConnectedSupplyAPI, _SupplyRouterAPI
 from ._demand import _DemandTagAPI, _DemandPartnerAPI, _DemandLabelAPI, _ConnectedDemandAPI, _CampaignAPI
-from ._common import _DomainListAPI, _BillAPI, _KeyAPI, _AppBundleListAPI, _AppNameListAPI, _DeviceIdListAPI, _IpListAPI
+from ._common import _DomainListAPI, _BillAPI, _KeyAPI, _AppBundleListAPI, _AppNameListAPI, _IpListAPI, _SegmentListAPI
 from ._reporting import _ReportingAPI, _TrafficQualityReport
 from ._account import _AccountAPI, _UserAPI
 from ._direct_connect import _DirectConnectionAPI
@@ -573,7 +573,6 @@ from ._object_change_messages import _ObjectChangeMessagesAPI
 accounts = _AccountAPI()
 app_bundles = _AppBundleListAPI()
 app_names = _AppNameListAPI()
-device_id_lists = _DeviceIdListAPI()
 ip_lists = _IpListAPI()
 
 bills = _BillAPI()
@@ -600,6 +599,7 @@ supply_labels = _SupplyLabelAPI()
 supply_tags = _SupplyTagAPI()
 supply_routers = _SupplyRouterAPI()
 supply_partners = _SupplyPartnerAPI()
+segment_lists = _SegmentListAPI()
 
 users = _UserAPI()
 

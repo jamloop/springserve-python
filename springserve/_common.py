@@ -1,10 +1,10 @@
-
+from ._decorators import deprecated
 from . import _VDAPIService, _VDAPIResponse, _VDAPISingleResponse
 
 class _BulkListResponse(_VDAPISingleResponse):
 
     __LIST_API__ = ""
-    __LIST_PAYLOAD_ENTRY=""
+    __LIST_PAYLOAD_ENTRY__=""
 
     def _to_list(self, input_list):
         """
@@ -16,7 +16,7 @@ class _BulkListResponse(_VDAPISingleResponse):
         return [x for x in input_list]
 
     def get_list(self, **kwargs): 
-        return self._service.get("{}/{}".format(self.id, self._LIST_API__), **kwargs)
+        return self._service.get("{}/{}".format(self.id, self.__LIST_API__), **kwargs)
 
     def _bulk_path(self, param):
         return "{}/{}/{}".format(self.id, self.__LIST_API__, param)
@@ -27,13 +27,23 @@ class _BulkListResponse(_VDAPISingleResponse):
         return resp
 
     def bulk_create(self, input_list): 
+        """
+        Appends this list to the existing list
+        """
         return self._bulk_post(input_list, 'bulk_create')
 
     def bulk_replace(self, input_list):
+        """
+        Replaces the existing list with this list
+        """
         return self._bulk_post(input_list, 'bulk_replace')
 
     def bulk_delete(self, input_list):
-        return self._bulk_post(input_list, 'bulk_delete')
+        """
+        removes these items from the existing list
+        """
+        payload = {self.__LIST_PAYLOAD_ENTRY__:self._to_list(input_list)}
+        return self._service.bulk_delete(payload, path_param=self._bulk_path('bulk_delete'))
 
 
 class _DomainListResponse(_BulkListResponse):
@@ -41,8 +51,9 @@ class _DomainListResponse(_BulkListResponse):
     Override to give you access to the actual domains
     """
     __LIST_API__ = "domains"
-    __LIST_PAYLOAD_ENTRY="names"
+    __LIST_PAYLOAD_ENTRY__="names"
 
+    @deprecated("use get_list() instead")
     def get_domains(self, **kwargs):
         """
         Get the list of domains that are in this domain list
@@ -56,6 +67,7 @@ class _DomainListResponse(_BulkListResponse):
         """
         return self.get_list(**kwargs)
     
+    @deprecated("use bulk_create() instead")
     def add_domains(self, domains):
         """
         Add a list of domains to this domain list
@@ -67,6 +79,7 @@ class _DomainListResponse(_BulkListResponse):
         """
         return self.bulk_create(domains)
 
+    @deprecated("use bulk_delete() instead")
     def remove_domains(self, domains):
         """
         Add a list of domains to this domain list
@@ -90,8 +103,9 @@ class _AppBundleListResponse(_BulkListResponse):
     Override to give you access to the actual domains
     """
     __LIST_API__ = "app_bundles"
-    __LIST_PAYLOAD_ENTRY="app_bundles"
+    __LIST_PAYLOAD_ENTRY__="app_bundles"
 
+    @deprecated("use get_list() instead")
     def get_bundles(self, **kwargs):
         """
         Get the list of domains that are in this domain list
@@ -105,6 +119,7 @@ class _AppBundleListResponse(_BulkListResponse):
         """
         return self.get_list(**kwargs)
     
+    @deprecated("use bulk_create() instead")
     def add_bundles(self, bundles):
         """
         Add a list of domains to this domain list
@@ -116,6 +131,7 @@ class _AppBundleListResponse(_BulkListResponse):
         """
         return self.bulk_create(bundles)
 
+    @deprecated("use bulk_delete() instead")
     def remove_bundles(self, bundles):
         """
         Add a list of domains to this domain list
@@ -139,8 +155,9 @@ class _AppNameListResponse(_BulkListResponse):
     """
 
     __LIST_API__ = "app_names"
-    __LIST_PAYLOAD_ENTRY="app_names"
+    __LIST_PAYLOAD_ENTRY__="app_names"
 
+    @deprecated("use get_list() instead")
     def get_names(self, **kwargs):
         """
         Get the list of domains that are in this domain list
@@ -154,6 +171,7 @@ class _AppNameListResponse(_BulkListResponse):
         """
         return self.get_list(**kwargs)
     
+    @deprecated("use bulk_create() instead")
     def add_names(self, names):
         """
         Add a list of domains to this domain list
@@ -165,6 +183,7 @@ class _AppNameListResponse(_BulkListResponse):
         """
         return self.bulk_create(names)
 
+    @deprecated("use bulk_delete() instead")
     def remove_names(self, names):
         """
         Add a list of domains to this domain list
@@ -183,53 +202,17 @@ class _AppNameListAPI(_VDAPIService):
     __RESPONSE_OBJECT__ = _AppNameListResponse
 
 
-class _DeviceIdListResponse(_BulkListResponse):
+class _SegmentListResponse(_BulkListResponse):
     """
     Override to give you access to the actual device ids
     """
-    __LIST_API__ = "device_ids"
-    __LIST_PAYLOAD_ENTRY="device_ids"
+    __LIST_API__ = "items"
+    __LIST_PAYLOAD_ENTRY__="items"
 
-    def get_device_ids(self, **kwargs):
-        """
-        Get the list of device ids that are in this device id list
+class _SegmentListAPI(_VDAPIService):
 
-            d = springserve.device_id_list.get(id)
-            device_ids = d.get_device_ids()
-
-            for id in device_ids:
-                print id.device_id
-
-        """
-        return self.get_list(**kwargs)
-
-    def add_device_ids(self, device_ids):
-        """
-        Add a list of device ids to this device id list
-
-            d = springserve.device_id_lists.get(id)
-            d.add_device_ids(['123', '124'])
-
-        device_ids: List of device ids you would like to add
-        """
-        return self.bulk_create(device_ids)
-
-    def remove_device_ids(self, device_ids):
-        """
-        Remove a list of device ids from this device id list
-
-            d = springserve.device_id_lists.get(id)
-            d.remove_device_ids(['123', '124'])
-
-        device_ids: List of device ids you would like to remove
-        """
-        return self.bulk_delete(device_ids)
-
-
-class _DeviceIdListAPI(_VDAPIService):
-
-    __API__ = "device_id_lists"
-    __RESPONSE_OBJECT__ = _DeviceIdListResponse
+    __API__ = "segments"
+    __RESPONSE_OBJECT__ = _SegmentListResponse
 
 
 class _IpListResponse(_BulkListResponse):
@@ -237,8 +220,9 @@ class _IpListResponse(_BulkListResponse):
     Override to give you access to the actual ips
     """
     __LIST_API__ = "ips"
-    __LIST_PAYLOAD_ENTRY="ips"
+    __LIST_PAYLOAD_ENTRY__="ips"
 
+    @deprecated("use get_list() instead")
     def get_ips(self, **kwargs):
         """
         Get the list of ips that are in this ip list
@@ -252,6 +236,7 @@ class _IpListResponse(_BulkListResponse):
         """
         return self.get_list(**kwargs)
 
+    @deprecated("use bulk_create() instead")
     def add_ips(self, ips):
         """
         Add a list of ips to this ip list
@@ -263,6 +248,7 @@ class _IpListResponse(_BulkListResponse):
         """
         return self.bulk_create(ips)
 
+    @deprecated("use bulk_delete() instead")
     def remove_ips(self, ips):
         """
         Remove a list of ips from this ip list

@@ -10,6 +10,7 @@ AWS ELB 5XX error looks like:
 """
 import time
 import sys
+import warnings
 
 _msg = None
 try:
@@ -23,6 +24,17 @@ except:
 AWS_ELB_ERROR_MESSAGES = ("503 Service Temporarily Unavailable", "502 Bad Gateway")
 RACK_ATTACK_STATUS_CODE = 429
 RACK_ATTACK_MESSAGE = "Retry later\n"
+
+def deprecated(message):
+    def deprecated_decorator(func):
+        def deprecated_func(*args, **kwargs):
+            warnings.warn("{} is a deprecated function. {}".format(func.__name__, message),
+                        category=DeprecationWarning,
+                        stacklevel=2)
+            warnings.simplefilter('default', DeprecationWarning)
+            return func(*args, **kwargs)
+        return deprecated_func
+    return deprecated_decorator
 
 def is_resp_in_elb_error_messages(resp):
     if (sys.version_info >= (3, 0)):
