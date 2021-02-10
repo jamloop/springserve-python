@@ -8,7 +8,7 @@ if six.PY3:
     from builtins import object
 
 
-__version__ = '0.7.8' #TODO: This is duplicated in the build.  Need to figure how to set this once 
+__version__ = '0.7.9' #TODO: This is duplicated in the build.  Need to figure how to set this once 
 
 import sys as _sys
 import json as _json
