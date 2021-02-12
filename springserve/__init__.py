@@ -8,7 +8,7 @@ if six.PY3:
     from builtins import object
 
 
-__version__ = '0.7.9' #TODO: This is duplicated in the build.  Need to figure how to set this once 
+__version__ = '0.8.0' #TODO: This is duplicated in the build.  Need to figure how to set this once 
 
 import sys as _sys
 import json as _json
@@ -598,7 +598,7 @@ class _VDAPIService(object):
 
 from ._supply import _SupplyTagAPI, _SupplyPartnerAPI, _SupplyLabelAPI, _ConnectedSupplyAPI, _SupplyRouterAPI
 from ._demand import _DemandTagAPI, _DemandPartnerAPI, _DemandLabelAPI, _ConnectedDemandAPI, _CampaignAPI
-from ._common import _DomainListAPI, _BillAPI, _KeyAPI, _AppBundleListAPI, _AppNameListAPI, _IpListAPI, _SegmentListAPI
+from ._common import _DomainListAPI, _BillAPI, _KeyAPI, _AppBundleListAPI, _AppNameListAPI, _IpListAPI, _SegmentListAPI, _AdvertiserDomainListAPI
 from ._reporting import _ReportingAPI, _TrafficQualityReport
 from ._account import _AccountAPI, _UserAPI
 from ._direct_connect import _DirectConnectionAPI
@@ -607,6 +607,7 @@ from ._object_change_messages import _ObjectChangeMessagesAPI
 accounts = _AccountAPI()
 app_bundles = _AppBundleListAPI()
 app_names = _AppNameListAPI()
+advertiser_domain_lists = _AdvertiserDomainListAPI()
 ip_lists = _IpListAPI()
 
 bills = _BillAPI()
