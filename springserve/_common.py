@@ -68,6 +68,58 @@ class _BulkListResponse(_VDAPISingleResponse):
                                          files=files)
 
 
+class _AdvertiserDomainListResponse(_BulkListResponse):
+    """
+    Override to give you access to the actual domains
+    """
+    __LIST_API__ = "advertiser_domains"
+    __LIST_PAYLOAD_ENTRY__="names"
+
+    @deprecated("use get_list() instead")
+    def get_domains(self, **kwargs):
+        """
+        Get the list of domains that are in this domain list
+
+            d = springserve.domain_list.get(id)
+            domains = d.get_domains()
+
+            for domain in domains:
+                print domain.name
+
+        """
+        return self.get_list(**kwargs)
+    
+    @deprecated("use bulk_create() instead")
+    def add_domains(self, domains):
+        """
+        Add a list of domains to this domain list
+
+            d = springserve.domain_list.get(id)
+            d.add_domains(['blah.com', 'blah2.com'])
+
+        domains: List of domains you would like to add 
+        """
+        return self.bulk_create(domains)
+
+    @deprecated("use bulk_delete() instead")
+    def remove_domains(self, domains):
+        """
+        Add a list of domains to this domain list
+
+            d = springserve.domain_list.get(id)
+            d.remove_domains(['blah.com', 'blah2.com'])
+
+        domains: List of domains you would like to add 
+        """
+        return self.bulk_delete(domains)
+
+
+class _AdvertiserDomainListAPI(_VDAPIService):
+
+    __API__ = "advertiser_domain_lists"
+    __RESPONSE_OBJECT__ = _AdvertiserDomainListResponse
+
+
 class _DomainListResponse(_BulkListResponse):
     """
     Override to give you access to the actual domains
@@ -118,6 +170,7 @@ class _DomainListAPI(_VDAPIService):
 
     __API__ = "domain_lists"
     __RESPONSE_OBJECT__ = _DomainListResponse
+
 
 
 class _AppBundleListResponse(_BulkListResponse):
