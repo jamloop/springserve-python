@@ -5,7 +5,10 @@ from datetime import datetime
 
 from time import sleep
 
-import pandas
+try:
+    import pandas
+except:
+    pass
 
 class _ReportingResponse(_VDAPIMultiResponse):
 
