@@ -289,6 +289,45 @@ class _SegmentListAPI(_VDAPIService):
     __API__ = "segments"
     __RESPONSE_OBJECT__ = _SegmentListResponse
 
+class _ChannelIdListResponse(_BulkListResponse):
+
+    __LIST_API__ = "channel_ids"
+    __LIST_PAYLOAD_ENTRY__="channel_ids"
+
+class _ChannelIdListAPI(_VDAPIService):
+
+    __API__ = "channel_id_lists"
+    __RESPONSE_OBJECT__ = _ChannelIdListResponse
+
+class _DealIdListResponse(_BulkListResponse):
+
+    __LIST_API__ = "deal_ids"
+    __LIST_PAYLOAD_ENTRY__="deal_ids"
+
+class _DealIdListAPI(_VDAPIService):
+
+    __API__ = "deal_id_lists"
+    __RESPONSE_OBJECT__ = _DealIdListResponse
+
+class _PlacementIdListResponse(_BulkListResponse):
+
+    __LIST_API__ = "placement_ids"
+    __LIST_PAYLOAD_ENTRY__="placement_ids"
+
+class _PlacementIdListAPI(_VDAPIService):
+
+    __API__ =  "placement_id_lists"
+    __RESPONSE_OBJECT__ = _PlacementIdListResponse
+
+class _PublisherIdListResponse(_BulkListResponse):
+
+    __LIST_API__ = "publisher_ids"
+    __LIST_PAYLOAD_ENTRY__="publisher_ids"
+
+class _PublisherIdListAPI(_VDAPIService):
+
+    __API__ = "publisher_id_lists"
+    __RESPONSE_OBJECT__ = _PublisherIdListResponse
 
 class _IpListResponse(_BulkListResponse):
     """
