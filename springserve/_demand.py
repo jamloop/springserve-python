@@ -37,6 +37,12 @@ class _DemandTagAPI(_VDAPIService):
     __RESPONSE_OBJECT__ = _DemandTagResponse
     __API__ = "demand_tags"
 
+class _SpotxConnectAPI(_VDAPIService):
+
+    __RESPONSE_OBJECT__ = _DemandTagResponse
+    __API__ = "spotx_connects"
+
+
 class _DemandPartnerAPI(_VDAPIService):
 
     __API__ = "demand_partners"
