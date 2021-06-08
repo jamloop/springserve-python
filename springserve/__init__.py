@@ -8,7 +8,7 @@ if six.PY3:
     from builtins import object
 
 
-__version__ = '0.8.3' #TODO: This is duplicated in the build.  Need to figure how to set this once 
+__version__ = '0.8.4' #TODO: This is duplicated in the build.  Need to figure how to set this once 
 
 import sys as _sys
 import json as _json
@@ -20,6 +20,7 @@ _msg = None
 
 try:
     from link import lnk as _lnk
+    from link.wrappers import SpringServeAPI
     _msg = _lnk.msg
 except:
     print("problem loading link, this is ok on the install")
@@ -29,7 +30,7 @@ from ._decorators import raw_response_retry
 _API = None
 _ACCOUNT = None
 _DEFAULT_BASE_URL = "https://console.springserve.com/api/v0"
-
+_CONFIG_OVERRIDE = None
 
 def setup_config():
     """
@@ -77,13 +78,15 @@ def API(reauth=False):
     Get the raw API object.  This is rarely used directly by a client of this
     library, but it used as an internal function
     """
-    global _API, _ACCOUNT
+    global _API, _ACCOUNT, _CONFIG_OVERRIDE
 
     if _API is None or reauth:
         _msg.debug("authenticating to springserve")
         try:
             if _ACCOUNT:
                 _API = _lnk("springserve.{}".format(_ACCOUNT))
+            elif _CONFIG_OVERRIDE:
+                _API = SpringServeAPI(**_CONFIG_OVERRIDE)
             else:
                 try:
                     _API = _lnk("springserve.{}".format("__default__"))
@@ -94,13 +97,19 @@ def API(reauth=False):
         except Exception as e:
             raise Exception("""Error authenticating: check your link.config to
                             make sure your username, password and url are
-                            correct""")
+                            correct: {}""".format(e))
     return _API
 
 
 def switch_account(account_name="__default__"):
     global _ACCOUNT
     _ACCOUNT = account_name
+    API(True)
+
+def set_credentials(user, password, base_url='https://console.springserve.com/api/v0'):
+    global _CONFIG_OVERRIDE
+
+    _CONFIG_OVERRIDE = {'user': user, 'password': password, 'base_url': base_url} 
     API(True)
 
 
