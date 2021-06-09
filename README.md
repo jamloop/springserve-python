@@ -53,6 +53,16 @@ using link.  Here is an example:
 
 		In [2]: springserve.set_credentials(user='blah@blah.com', password="mypassword")
 
+### Configuration: Token Injection ####
+
+If you have many users and you want to store their tokens and inject the token
+in for each call you can do that using set_token. Here is an example: 
+
+		In [1]: import springserve
+
+		In [2]: springserve.set_token('56385e9ae7ef6cc35e5c34153f479b858')
+
+
 ### Tab Completion and IPython ###
 
 The python library was built to work seamlessly with tools like IPython. IPython

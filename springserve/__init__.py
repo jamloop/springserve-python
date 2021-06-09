@@ -8,7 +8,7 @@ if six.PY3:
     from builtins import object
 
 
-__version__ = '0.8.4' #TODO: This is duplicated in the build.  Need to figure how to set this once 
+__version__ = '0.8.5' #TODO: This is duplicated in the build.  Need to figure how to set this once 
 
 import sys as _sys
 import json as _json
@@ -20,7 +20,7 @@ _msg = None
 
 try:
     from link import lnk as _lnk
-    from link.wrappers import SpringServeAPI
+    from link.wrappers import SpringServeAPI, SpringAuth
     _msg = _lnk.msg
 except:
     print("problem loading link, this is ok on the install")
@@ -28,6 +28,7 @@ except:
 from ._decorators import raw_response_retry
 
 _API = None
+_TOKEN_OVERRIDE = None
 _ACCOUNT = None
 _DEFAULT_BASE_URL = "https://console.springserve.com/api/v0"
 _CONFIG_OVERRIDE = None
@@ -73,12 +74,27 @@ def setup_config():
     _lnk.fresh()
 
 
+class SpringServeAPITokenOverride(SpringServeAPI):
+    """
+    Used to inject a token instead of having the SDK do auth
+    """
+
+    def __init__(self, base_url=None, user=None, password=None, token=None):
+        self._token = token
+        super(SpringServeAPI, self).__init__(base_url=base_url,
+                                             user=user,
+                                             password=password)
+
+    def authenticate(self):
+        self._wrapped.auth = SpringAuth(self._token)
+
+
 def API(reauth=False):
     """
     Get the raw API object.  This is rarely used directly by a client of this
     library, but it used as an internal function
     """
-    global _API, _ACCOUNT, _CONFIG_OVERRIDE
+    global _API, _ACCOUNT, _CONFIG_OVERRIDE, _TOKEN_OVERRIDE
 
     if _API is None or reauth:
         _msg.debug("authenticating to springserve")
@@ -87,6 +103,9 @@ def API(reauth=False):
                 _API = _lnk("springserve.{}".format(_ACCOUNT))
             elif _CONFIG_OVERRIDE:
                 _API = SpringServeAPI(**_CONFIG_OVERRIDE)
+
+            elif _TOKEN_OVERRIDE:
+                _API = SpringServeAPITokenOverride(**_TOKEN_OVERRIDE)
             else:
                 try:
                     _API = _lnk("springserve.{}".format("__default__"))
@@ -110,6 +129,12 @@ def set_credentials(user, password, base_url='https://console.springserve.com/ap
     global _CONFIG_OVERRIDE
 
     _CONFIG_OVERRIDE = {'user': user, 'password': password, 'base_url': base_url} 
+    API(True)
+
+def set_token(token, base_url='https://console.springserve.com/api/v0'):
+    global _TOKEN_OVERRIDE
+
+    _TOKEN_OVERRIDE = {'token': token, 'base_url': base_url}
     API(True)
 
 
