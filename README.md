@@ -20,7 +20,7 @@ To install from pip:
 Usage
 -----------
 
-### Configuration ###
+### Configuration: Using Link ###
 
 Springserve is using link to handle it's configuration.  Link is a way to
 centrally configure your database, api handles. It has support for Springserve
@@ -43,6 +43,15 @@ Run the following to set up your config:
 		Would you like write[Y/n] y
 		writing config to: /Users/{username}/.link/link.config
 		done: refreshing config
+
+### Configuration: In Code ####
+
+You can now configure your username and password directly in code instead of
+using link.  Here is an example: 
+
+		In [1]: import springserve
+
+		In [2]: springserve.set_credentials(user='blah@blah.com', password="mypassword")
 
 ### Tab Completion and IPython ###
 
