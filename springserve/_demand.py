@@ -60,6 +60,23 @@ class _CampaignAPI(_VDAPIService):
 
     __API__ = "campaigns"
 
+class _CreativeAPI(_VDAPIService):
+
+    __API__ = "creatives"
+
+class _TagCreativeAPI(_VDAPIService):
+
+    __API__ = "tag_creatives"
+
+class _VideoCreativeAPI(_VDAPIService):
+
+    __API__ = "video_creatives"
+
+class _AudioCreativeAPI(_VDAPIService):
+
+    __API__ = "audio_creatives"
+
+
 
 
 
