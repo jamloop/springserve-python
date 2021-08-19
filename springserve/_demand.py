@@ -72,14 +72,14 @@ class _VideoCreativeAPI(_VDAPIService):
 
     __API__ = "videos"
 
-    def upload_video(self, payload, video_file):
+    def upload_video(self, payload, video_file, **kwargs):
         files={'video': (video_file.split('/')[-1], open(video_file, 'rb'),
             "multipart/form-data")}
         
         if payload:
             files.update({x:str(y) for x,y in payload.items()})
 
-        return self.post(payload, files=files)
+        return self.post(payload, files=files, **kwargs)
  
 class _AudioCreativeAPI(_VDAPIService):
 
