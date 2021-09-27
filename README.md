@@ -17,6 +17,10 @@ To install from pip:
 
     pip install springserve
 
+
+To use the `Reporting API <https://springserve.atlassian.net/wiki/spaces/SSD/pages/1588035603/Reporting+API>`__
+with this package, also install `pandas <https://pypi.org/project/pandas/>`__.
+
 Usage
 -----------
 
@@ -140,7 +144,8 @@ easy to make calls that will return more than one result.
 
 ### SpringServe Reporting ###
 
-Below is the documentation for and an example of using SpringServe reporting
+Below is the documentation for and an example of using SpringServe reporting.
+This module requires the ``pandas`` package to be installed.
 
         In [10]: springserve.reports.run?
         Signature: springserve.reports.run(start_date=None, end_date=None, interval=None,

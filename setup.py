@@ -26,7 +26,10 @@ CLASSIFIERS = ['Development Status :: 4 - Beta',
 EMAIL = ''
 SETUP_ARGS = {}
 REQUIRES = ['requests>=2.0.0', 'requests_oauthlib>=0.4.0',
-            'link>=0.3.1','xmltodict', 'pandas', 'six', 'requests-toolbelt' ]
+            'link>=0.3.1','xmltodict', 'six', 'requests-toolbelt' ]
+
+# The reporting API depends on pandas
+EXTRAS_REQUIRE = {'reporting': ['pandas']}
 
 # write out the version file so we can keep track on what version the built
 # package is
@@ -41,7 +44,8 @@ setup(name=__title__,
       maintainer=__author__,
       url=URL,
       packages=['springserve'],
-      install_requires = REQUIRES,
+      install_requires=REQUIRES,
+      extras_require=EXTRAS_REQUIRE,
       #data_files = DATA_FILES,
       classifiers=CLASSIFIERS,
       **SETUP_ARGS)
