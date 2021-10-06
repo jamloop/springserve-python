@@ -319,6 +319,16 @@ class _PlacementIdListAPI(_VDAPIService):
     __API__ =  "placement_id_lists"
     __RESPONSE_OBJECT__ = _PlacementIdListResponse
 
+class _ParameterListResponse(_BulkListResponse):
+
+    __LIST_API__ = "values"
+    __LIST_PAYLOAD_ENTRY__="values"
+
+class _ParameterListAPI(_VDAPIService):
+
+    __API__ =  "parameter_lists"
+    __RESPONSE_OBJECT__ = _ParameterListResponse
+
 class _PublisherIdListResponse(_BulkListResponse):
 
     __LIST_API__ = "publisher_ids"
