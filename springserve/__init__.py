@@ -8,7 +8,7 @@ if six.PY3:
     from builtins import object
 
 
-__version__ = '0.8.8' #TODO: This is duplicated in the build.  Need to figure how to set this once 
+__version__ = '0.8.9' #TODO: This is duplicated in the build.  Need to figure how to set this once 
 
 import sys as _sys
 import json as _json
@@ -634,7 +634,7 @@ from ._supply import _SupplyTagAPI, _SupplyPartnerAPI, _SupplyLabelAPI, _Connect
 from ._demand import _DemandTagAPI, _DemandPartnerAPI, _DemandLabelAPI, _ConnectedDemandAPI, _CampaignAPI, _SpotxConnectAPI
 from ._demand import _CreativeAPI, _TagCreativeAPI, _VideoCreativeAPI, _AudioCreativeAPI
 from ._common import _DomainListAPI, _BillAPI, _KeyAPI, _AppBundleListAPI, _AppNameListAPI, _IpListAPI, _SegmentListAPI, _AdvertiserDomainListAPI
-from ._common import _ChannelIdListAPI, _DealIdListAPI, _PlacementIdListAPI, _PublisherIdListAPI
+from ._common import _ChannelIdListAPI, _DealIdListAPI, _PlacementIdListAPI, _PublisherIdListAPI, _ParameterListAPI
 from ._reporting import _ReportingAPI, _TrafficQualityReport
 from ._account import _AccountAPI, _UserAPI
 from ._direct_connect import _DirectConnectionAPI
@@ -671,6 +671,7 @@ keys = _KeyAPI()
 _object_change_messages = _ObjectChangeMessagesAPI()
 
 placement_id_lists = _PlacementIdListAPI()
+parameter_lists = _ParameterListAPI()
 publisher_id_lists = _PublisherIdListAPI()
 
 reports = _ReportingAPI()
