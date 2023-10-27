@@ -55,7 +55,8 @@ class _ReportingResponse(_VDAPIMultiResponse):
         else:
             #call to dataframe to make sure self.dataframe is set
             self.to_dataframe()
-            self.dataframe = self.dataframe.append(new_data)
+            new_df = pandas.concat([self.dataframe, new_data])
+            self.dataframe = new_df
         self._current_page += 1
         return True
 
