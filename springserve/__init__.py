@@ -632,7 +632,7 @@ class _VDAPIService(object):
 
 from ._supply import _SupplyTagAPI, _SupplyPartnerAPI, _SupplyLabelAPI, _ConnectedSupplyAPI, _SupplyRouterAPI
 from ._demand import _DemandTagAPI, _DemandPartnerAPI, _DemandLabelAPI, _ConnectedDemandAPI, _CampaignAPI, _SpotxConnectAPI
-from ._demand import _CreativeAPI, _TagCreativeAPI, _VideoCreativeAPI, _AudioCreativeAPI
+from ._demand import _CreativeAPI, _TagCreativeAPI, _VideoCreativeAPI, _AudioCreativeAPI, _ProgrammaticGuaranteedAPI
 from ._common import _DomainListAPI, _BillAPI, _KeyAPI, _AppBundleListAPI, _AppNameListAPI, _IpListAPI, _SegmentListAPI, _AdvertiserDomainListAPI
 from ._common import _ChannelIdListAPI, _DealIdListAPI, _PlacementIdListAPI, _PublisherIdListAPI, _ParameterListAPI
 from ._reporting import _ReportingAPI, _TrafficQualityReport
@@ -656,6 +656,7 @@ channel_id_lists = _ChannelIdListAPI()
 deal_id_lists = _DealIdListAPI() 
 demand_labels = _DemandLabelAPI()
 demand_tags = _DemandTagAPI()
+programmatic_guaranteed = _ProgrammaticGuaranteedAPI()
 demand_partners = _DemandPartnerAPI()
 direct_connections = _DirectConnectionAPI()
 
