@@ -36,6 +36,11 @@ class _DemandTagAPI(_VDAPIService):
 
     __RESPONSE_OBJECT__ = _DemandTagResponse
     __API__ = "demand_tags"
+    
+class _ProgrammaticGuaranteedAPI(_VDAPIService):
+
+    __RESPONSE_OBJECT__ = _DemandTagResponse
+    __API__ = "programmatic_guaranteed"
 
 class _SpotxConnectAPI(_VDAPIService):
 
